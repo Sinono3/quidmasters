@@ -1,10 +1,14 @@
-SRC = src/main.cpp
+# SRC = src/main.cpp src/Face.cpp
+SRC = src/Dungeon.cpp src/glad.c src/Shader.cpp src/Model.cpp src/draw.cpp
 BUILDDIR = build
 EXE = build/pou
 
 CXX = g++
-CXXFLAGS = -Wall --std=c++20 -I/opt/homebrew/include/
-LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system
+GCC = gcc
+CXXFLAGS = -Wall -I/opt/homebrew/include/ -Iglad/include
+CFLAGS =
+CPPFLAGS = --std=c++20 
+LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -framework OpenGL
 
 OBJS = $(SRC:%=$(BUILDDIR)/%.o)
 
@@ -17,7 +21,11 @@ clean:
 
 $(BUILDDIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+
+$(BUILDDIR)/%.c.o: %.c
+	mkdir -p $(dir $@)
+	$(GCC) $(CXXFLAGS) $(CFLAGS) -c $< -o $@
 
 $(EXE): $(OBJS)
 	$(CXX) -o $@ $^ $(LFLAGS)
