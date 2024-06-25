@@ -19,7 +19,7 @@ clean:
 	rm -rf $(BUILDDIR)
 .PHONY: all run clean
 
-$(BUILDDIR)/%.cpp.o: %.cpp
+$(BUILDDIR)/%.cpp.o: %.cpp src/Map.hpp
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 

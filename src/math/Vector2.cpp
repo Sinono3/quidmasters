@@ -1,0 +1,59 @@
+template<typename T>
+Vector2<T>::Vector2() : x(0), y(0) {}
+
+template<typename T>
+Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
+
+template<typename T>
+Vector2<T>::Vector2(sf::Vector2<T> v) : x(v.x), y(v.y) { }
+template<typename T>
+Vector2<T>::Vector2(glm::vec2 v) : x(v.x), y(v.y) { }
+
+template<typename T>
+T Vector2<T>::dot(const Vector2& other) { return x * other.x + y * other.y; }
+
+template<typename T>
+T Vector2<T>::norm() { return sqrt(dot(*this)); }
+
+// Operators
+template<typename T>
+Vector2<T> Vector2<T>::operator+(const Vector2 &other) {
+	return Vector2(x + other.x, y + other.y);
+}
+template<typename T>
+Vector2<T> Vector2<T>::operator-(const Vector2 &other) {
+	return Vector2(x - other.x, y - other.y);
+}
+template<typename T>
+Vector2<T> Vector2<T>::operator-() { return Vector2(-x, -y); }
+
+template<typename T>
+Vector2<T> Vector2<T>::operator*(T scalar) {
+	return Vector2(scalar * x, scalar * y);
+}
+
+template<typename T>
+Vector2<T> operator*(T scalar, const Vector2<T> &vector) {
+	return vector * scalar;
+}
+
+// Conversion
+template<typename T>
+sf::Vector2<T> Vector2<T>::toSFML() {
+	return sf::Vector2(x, y);
+}
+template<typename T>
+glm::vec2 Vector2<T>::toGLM() {
+	return glm::vec2((float)x, (float)y);
+}
+
+template<typename T>
+template<typename U>
+Vector2<U> Vector2<T>::to() {
+	return { (U)x, (U)y };
+}
+
+// template struct Vector2<int>;
+// template struct Vector2<unsigned int>;
+// template struct Vector2<float>;
+// template struct Vector2<double>;
