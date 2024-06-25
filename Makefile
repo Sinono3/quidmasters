@@ -8,7 +8,7 @@ GCC = gcc
 CXXFLAGS = -Wall -I/opt/homebrew/include/ -Iglad/include
 CFLAGS =
 CPPFLAGS = --std=c++20 
-LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -framework OpenGL
+LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -framework OpenGL
 
 OBJS = $(SRC:%=$(BUILDDIR)/%.o)
 

@@ -1,42 +1,21 @@
 #include "math/Vector2.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <cmath>
 #include <iostream>
+#include <random>
 #include <vector>
 #include <algorithm>
 
+std::default_random_engine rng;
+
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const int MAP_WIDTH = 16;
-const int MAP_HEIGHT = 16;
-const float FOV = 90.0f * M_PI / 180.0f;
-const float DEPTH = 16.0f;
-
-// 0 = Empty
-// 1 = Wall
-// 2 = Enemy
-const int MAP[MAP_WIDTH * MAP_HEIGHT] = {
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-    1,0,0,0,0,0,0,2,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,2,0,1,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-    1,0,0,1,0,0,0,0,0,0,0,0,1,0,0,1,
-    1,0,0,1,1,1,1,0,0,1,1,1,1,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-};
 
 struct Player {
 	Vector2f pos = {2.0f, 2.0f};
     float angle = 0.0f;
+    float health = 10.0f, maxHealth = 10.0f;
 
     Vector2f getForward() {
     	return transformVector(Vector2f(1.0f, 0.0f));
@@ -61,31 +40,77 @@ bool aabb(float x1, float y1, float w1, float h1, float x2, float y2, float w2, 
 	return (x1 < x2 + w2) && (x1 + w1 > x2) && (y1 < y2 + h2) && (y1 + h1 > h2);
 }
 
-struct Sprite {
+void drawStatusBar(sf::RenderTarget &window, const sf::Font &font,
+				   const char *label, float var, float max, float x, float y,
+				   float maxWidth, float height, sf::Color fill, sf::Color bg) {
+
+	float fraction = var / max;
+	sf::RectangleShape shape(sf::Vector2f(maxWidth, height));
+
+	// Background
+	shape.setPosition(sf::Vector2f(x, y));
+	shape.setFillColor(bg);
+	window.draw(shape);
+
+	// Fill
+	shape.setSize(sf::Vector2f(fraction * maxWidth, height));
+	shape.setFillColor(fill);
+	window.draw(shape);
+
+	sf::Text text;
+	text.setFont(font);
+	text.setString(label);
+	text.setPosition(x, y);
+	text.setCharacterSize(20);
+	text.setFillColor(fill);
+	text.setOutlineColor(bg);
+	if (fraction >= 0.0 && fraction < 0.1) fraction = 0.1;
+	if (fraction <= 0.0 && fraction > -0.1) fraction = -0.1;
+	float thickness = (1.0 / fraction) * 3.0;
+
+	text.setOutlineThickness(thickness);
+	window.draw(text);
+}
+
+
+struct Enemy {
 	Vector2f pos = {5.0f, 5.0f};
+	Vector2f vel;
     sf::Texture texture;
+};
+
+struct Bullet {
+	Vector2f pos;
+	Vector2f vel;
 };
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
+    sf::Sound sound;
 
 	sf::Font font;
-	if (!font.loadFromFile("fonts/papyrus.ttf")) {
+    sf::SoundBuffer sfxMG;
+
+    if (!sfxMG.loadFromFile("sfx/mg.wav") || !font.loadFromFile("fonts/papyrus.ttf")) {
 		std::cerr << "We're fucked" << std::endl;
-		return 1;
-	}
+        return 1;
+    }
 
     Player player;
-	std::vector<Sprite> sprites;
-    Sprite enemy;
+	std::vector<Enemy> enemies;
+    Enemy enemy;
     enemy.pos.x = 5.5f;
     enemy.pos.y = 5.5f;
     if (!enemy.texture.loadFromFile("sprites/sprite.jpg")) {
         // Handle sprite texture loading error
         return -1;
     }
-    sprites.push_back(enemy);
+    enemies.push_back(enemy);
+
+    sf::Clock machineGun;
+    float machineGunTime = 0.1f;
+    std::vector<Bullet> bullets;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -104,39 +129,30 @@ int main() {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
 			wasd.x = 1.0;
 
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			if (machineGun.getElapsedTime().asSeconds() > machineGunTime) {
+				machineGun.restart();
+				machineGunTime = (std::normal_distribution(0.1f, 0.1f))(rng);
+
+				// Fire, fire, fire
+				// auto pos = player.pos + player.getForward() * 0.2f;
+				auto pos = player.pos;
+				auto vel = player.getForward() * 0.8f;
+				bullets.push_back(Bullet { pos, vel });
+				sound.setBuffer(sfxMG);
+				std::normal_distribution n(1.0, 0.01);
+				sound.setPitch(n(rng));
+				sound.play();
+			}
+		}
+
 		// Normalize if non-zero
 		if (wasd.norm() > 0.0f) wasd = wasd * (1.0f / wasd.norm());
 
 		const float WALK_SPEED = 0.08f;
-		const int TRIES = 20;
 
 		Vector2f velocity = wasd * WALK_SPEED;
-		float speed = velocity.norm();
-		Vector2f normalized = velocity.normalized();
-		Vector2f newVel = velocity;
-
-		Vector2i coordinate = (player.pos + velocity).to<int>();
-		if (MAP[coordinate.y * MAP_WIDTH + coordinate.x] == 1) {
-			float curX = player.pos.x + velocity.x;
-
-			for (int x = 0; x < (int)(velocity.x * 100.0f); x++) {
-				curX -= velocity.x / 100.0f;
-
-				if (MAP[coordinate.y * MAP_WIDTH + (int)curX] == 0) {
-					break;
-				}
-			}
-
-			float curY = player.pos.y + velocity.y;
-			for (int y = 0; y < (int)(velocity.y * 100.0f); y++) {
-				curY -= velocity.y / 100.0f;
-
-				if (MAP[(int)curY * MAP_WIDTH + coordinate.x] == 0) {
-					break;
-				}
-			}
-			player.pos = Vector2f(curX, curY);
-		}
+		player.pos = player.pos + velocity;
 
         // Mouse look
         const float TILE_SIZE = 20.0f;
@@ -144,56 +160,93 @@ int main() {
 		Vector2f mousePos = Vector2i(sf::Mouse::getPosition(window)).to<float>();
 		Vector2f gameMousePos = mousePos * (1.0f / TILE_SIZE);
 		Vector2f playerToMouse = gameMousePos - player.pos;
-		std::cout << mousePos.x << ", " << mousePos.y << std::endl;
 		player.angle = atan2(playerToMouse.y, playerToMouse.x);
+
+
+		for (auto& bullet : bullets) {
+			bullet.pos = bullet.pos + bullet.vel;
+
+	    	for (auto& enemy: enemies) {
+	    		auto radius = 10.0f;
+				if (aabb(bullet.pos.x, bullet.pos.y, 0.1f, 0.1f, enemy.pos.x - 0.5f, enemy.pos.y - 0.5f, 1.0f, 1.0f)) {
+					std::cout << "HIT" << std::endl;
+					enemy.vel = bullet.vel * 0.1;
+				}
+			}
+		}
+
+    	for (auto& enemy: enemies) {
+    		const float ENEMY_MAX_SPEED = 0.12f;
+    		const float ENEMY_ACCEL = 0.01f;
+    		Vector2f targetVel = (player.pos - enemy.pos).normalized() * ENEMY_MAX_SPEED;
+    		Vector2f accel = targetVel - enemy.vel;
+    		if (accel.norm() > ENEMY_ACCEL)
+				accel = accel.normalized() * ENEMY_ACCEL;
+    		enemy.vel = enemy.vel + accel;
+    		enemy.pos = enemy.pos + enemy.vel;
+		}
+	
+
+
+
+
+		
 
         window.clear(sf::Color(3, 2, 2));
 
-        // Draw map
-        sf::RectangleShape tile(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-	        for (int x = 0; x < MAP_WIDTH; x++) {
-	        	tile.setPosition(x * TILE_SIZE, y * TILE_SIZE);
-
-	        	switch (MAP[y * MAP_WIDTH + x]) {
-	        		case 0: tile.setFillColor(sf::Color::Black); break;
-	        		case 1: tile.setFillColor(sf::Color::White); break;
-        			default: break;
-	        	}
-
-	        	window.draw(tile);
-	        }
-    	}
-    	// Draw player in map
+    	// Draw player
     	auto radius = 10.0f;
     	auto inset = Vector2f(-radius, - radius);
 
     	sf::CircleShape circle(radius, 20);
-    	circle.setFillColor(sf::Color::Red);
+    	circle.setFillColor(sf::Color::Green);
     	circle.setPosition((player.pos * TILE_SIZE + inset).toSFML());
     	window.draw(circle);
 
-    	// Draw player direction in map
+    	// Draw player direction
 	    sf::Vertex line[] = {
-	        sf::Vertex((player.pos * TILE_SIZE).toSFML(), sf::Color::Red),
+	        sf::Vertex((player.pos * TILE_SIZE).toSFML(), sf::Color::Green),
 	        sf::Vertex(((player.pos + player.getForward()) * TILE_SIZE).toSFML(), sf::Color::Red)
 	    };
 	    window.draw(line, 2, sf::Lines);
 
-    	// Draw sprites in map
-    	for (auto& sprite: sprites) {
+    	// Draw sprites
+    	for (auto& enemy: enemies) {
 	    	sf::CircleShape circle(radius, 20);
 	    	circle.setFillColor(sf::Color::Blue);
-	    	circle.setPosition((sprite.pos * TILE_SIZE + inset).toSFML());
-	    	window.draw(circle);
-    	}
+	    	circle.setPosition((enemy.pos * TILE_SIZE + inset).toSFML());
+			window.draw(circle);
+		}
 
-        // sf::Text text;
-        // text.setFont(font);
-        // text.setString("Health");
-        // window.draw(text);
+		// Draw bullets
+    	for (auto& bullet: bullets) {
+	  //   	sf::CircleShape circle(1.0f, 20);
+	  //   	circle.setFillColor(sf::Color::Red);
+	  //   	circle.setPosition((bullet.pos * TILE_SIZE).toSFML());
+			// window.draw(circle);
+		    sf::Vertex line[] = {
+		        sf::Vertex(((bullet.pos - bullet.vel) * TILE_SIZE).toSFML(), sf::Color::Green),
+		        sf::Vertex(((bullet.pos) * TILE_SIZE).toSFML(), sf::Color::Red)
+		    };
+		    window.draw(line, 2, sf::Lines);
+		}
 
-        window.display();
+		// Draw statusbars
+		drawStatusBar(window, font, "health", player.health, player.maxHealth,
+					  0.0, 0.0, 140.0, 30.0, sf::Color::Green, sf::Color::Red);
+		// drawStatusBar(window, font, "not-hunger", nourishment,
+		// 			  maxNourishment, 150.0, 0.0, 100.0, 32.0,
+		// 			  sf::Color::Yellow, sf::Color::Red);
+		// drawStatusBar(window, font, "happiness", happiness,
+		// 			  maxHappiness, 300.0, 0.0, 100.0, 49.0,
+		// 			  sf::Color::Cyan, sf::Color::Red);
+
+		// sf::Text text;
+		// text.setFont(font);
+		// text.setString("Health");
+		// window.draw(text);
+
+		window.display();
     }
 
     return 0;
