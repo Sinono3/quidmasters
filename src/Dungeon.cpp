@@ -57,86 +57,14 @@ struct Player {
 	}
 };
 
+bool aabb(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
+	return (x1 < x2 + w2) && (x1 + w1 > x2) && (y1 < y2 + h2) && (y1 + h1 > h2);
+}
+
 struct Sprite {
 	Vector2f pos = {5.0f, 5.0f};
     sf::Texture texture;
 };
-
-std::vector<float> zBuffer(SCREEN_WIDTH);
-
-float dist(float ax, float ay, float bx, float by, float angle) {
-    return std::sqrt((bx-ax) * (bx-ax) + (by-ay) * (by-ay));
-}
-
-void drawRay(sf::RenderWindow& window, Player& player, float rayAngle, float x) {
-    float rayX = std::cos(rayAngle);
-    float rayY = std::sin(rayAngle);
-
-    float distanceToWall = 0;
-
-    while (distanceToWall < DEPTH) {
-        distanceToWall += 0.1f;
-
-        int testX = static_cast<int>(player.pos.x + rayX * distanceToWall);
-        int testY = static_cast<int>(player.pos.y + rayY * distanceToWall);
-
-        // If the test point is out of the map, don't check it 
-        if (testX < 0 || testX >= MAP_WIDTH || testY < 0 || testY >= MAP_HEIGHT) {
-            distanceToWall = DEPTH;
-            break;
-        } 
-
-        // If the ray collided against a map wall, break the loop
-        if (MAP[testY * MAP_WIDTH + testX] == 1) {
-            break;
-        }
-    }
-    zBuffer[x] = distanceToWall;
-
-    int ceiling = static_cast<int>((SCREEN_HEIGHT / 2.0) - SCREEN_HEIGHT / distanceToWall);
-    int floor = SCREEN_HEIGHT - ceiling;
-
-    float lightingLevel = (1.0f - std::min(distanceToWall / DEPTH, 1.0f));
-    sf::Color wallColor(
-		(int)(lightingLevel * 59),
-		(int)(lightingLevel * 37),
-		(int)(lightingLevel * 35)
-    );
-
-    sf::Vertex line[] = {
-        sf::Vertex(sf::Vector2f(x, ceiling), wallColor),
-        sf::Vertex(sf::Vector2f(x, floor), wallColor)
-    };
-
-    window.draw(line, 2, sf::Lines);
-}
-
-void drawSprite(sf::RenderWindow& window, Player& player, Sprite& sprite) {
-    // Translate sprite position to relative to camera
-    auto relativeSpritePos = sprite.pos - player.pos;
-    // Rotate the basis of the sprite pos to match the player's (right = +x, forward = +y)
-    auto viewSpritePos = Vector2f(
-		relativeSpritePos.x * cos(player.angle + M_PI_2) + relativeSpritePos.y * sin(player.angle + M_PI_2),
-		-relativeSpritePos.x * sin(player.angle + M_PI_2) + relativeSpritePos.y * cos(player.angle + M_PI_2)
-	);
-	// auto viewSpritePos = player.transformVector(relativeSpritePos);
-	// auto viewSpritePos = player.inverseTransformVector(relativeSpritePos);
-
-    // float distToScreen = (float)SCREEN_WIDTH / (2.0f * tan(FOV / 2.0f));
-    float distToScreen = relativeSpritePos.norm();
-    auto screenPos = Vector2f(
-    	(viewSpritePos.x * distToScreen) / (viewSpritePos.y) + ((float)SCREEN_WIDTH / 2.0f),
-    	(float)SCREEN_HEIGHT / 2.0f
-    );
-
-    std::cout << "X = " << viewSpritePos.x  << "\tY = " << viewSpritePos.y << std::endl;
-
-    float size = 100.0f / distToScreen;
-    sf::RectangleShape shape;
-    shape.setSize(sf::Vector2f(size, size));
-    shape.setPosition(screenPos.toSFML());
-    window.draw(shape);
-}
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
@@ -168,9 +96,9 @@ int main() {
 
 		Vector2f wasd;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-			wasd.y = 1.0;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 			wasd.y = -1.0;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+			wasd.y = 1.0;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 			wasd.x = -1.0;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
@@ -179,36 +107,49 @@ int main() {
 		// Normalize if non-zero
 		if (wasd.norm() > 0.0f) wasd = wasd * (1.0f / wasd.norm());
 
-		Vector2f walkVector = sf::Vector2f(
-			wasd.y * cos(player.angle) - wasd.x * sin(player.angle),
-			wasd.y * sin(player.angle) + wasd.x * cos(player.angle));
-
 		const float WALK_SPEED = 0.08f;
-		player.pos = player.pos + walkVector * WALK_SPEED;
+		const int TRIES = 20;
+
+		Vector2f velocity = wasd * WALK_SPEED;
+		float speed = velocity.norm();
+		Vector2f normalized = velocity.normalized();
+		Vector2f newVel = velocity;
+
+		Vector2i coordinate = (player.pos + velocity).to<int>();
+		if (MAP[coordinate.y * MAP_WIDTH + coordinate.x] == 1) {
+			float curX = player.pos.x + velocity.x;
+
+			for (int x = 0; x < (int)(velocity.x * 100.0f); x++) {
+				curX -= velocity.x / 100.0f;
+
+				if (MAP[coordinate.y * MAP_WIDTH + (int)curX] == 0) {
+					break;
+				}
+			}
+
+			float curY = player.pos.y + velocity.y;
+			for (int y = 0; y < (int)(velocity.y * 100.0f); y++) {
+				curY -= velocity.y / 100.0f;
+
+				if (MAP[(int)curY * MAP_WIDTH + coordinate.x] == 0) {
+					break;
+				}
+			}
+			player.pos = Vector2f(curX, curY);
+		}
 
         // Mouse look
-		Vector2i screenSize = Vector2(window.getSize()).to<int>();
-		Vector2i screenCenter = Vector2i(window.getPosition()) + (screenSize.to<float>() * 0.5f).to<int>();
-		Vector2i newMousePos = sf::Mouse::getPosition();
-		Vector2i mouseDelta = newMousePos - screenCenter;
-		sf::Mouse::setPosition(screenCenter.toSFML());
-		const float MOUSE_SENSITIVITY = 0.001f;
-		player.angle = player.angle + mouseDelta.x * MOUSE_SENSITIVITY;
+        const float TILE_SIZE = 20.0f;
+
+		Vector2f mousePos = Vector2i(sf::Mouse::getPosition(window)).to<float>();
+		Vector2f gameMousePos = mousePos * (1.0f / TILE_SIZE);
+		Vector2f playerToMouse = gameMousePos - player.pos;
+		std::cout << mousePos.x << ", " << mousePos.y << std::endl;
+		player.angle = atan2(playerToMouse.y, playerToMouse.x);
 
         window.clear(sf::Color(3, 2, 2));
 
-        for (int x = 0; x < SCREEN_WIDTH; x++) {
-			float rayAngle = (player.angle - FOV/2.0f) + ((float)x / (float)SCREEN_WIDTH) * FOV;
-            drawRay(window, player, rayAngle, x);
-        }
-
-        for (auto& sprite : sprites) {
-        	drawSprite(window, player, sprite);
-        }
-
-
         // Draw map
-        const float TILE_SIZE = 10.0f;
         sf::RectangleShape tile(sf::Vector2f(TILE_SIZE, TILE_SIZE));
         for (int y = 0; y < MAP_HEIGHT; y++) {
 	        for (int x = 0; x < MAP_WIDTH; x++) {
@@ -224,9 +165,12 @@ int main() {
 	        }
     	}
     	// Draw player in map
-    	sf::CircleShape circle(5.0f, 20);
+    	auto radius = 10.0f;
+    	auto inset = Vector2f(-radius, - radius);
+
+    	sf::CircleShape circle(radius, 20);
     	circle.setFillColor(sf::Color::Red);
-    	circle.setPosition(((player.pos - Vector2f(0.5, 0.5)) * TILE_SIZE).toSFML());
+    	circle.setPosition((player.pos * TILE_SIZE + inset).toSFML());
     	window.draw(circle);
 
     	// Draw player direction in map
@@ -238,9 +182,9 @@ int main() {
 
     	// Draw sprites in map
     	for (auto& sprite: sprites) {
-	    	sf::CircleShape circle(5.0f, 20);
+	    	sf::CircleShape circle(radius, 20);
 	    	circle.setFillColor(sf::Color::Blue);
-	    	circle.setPosition(((sprite.pos - Vector2f(0.5, 0.5)) * TILE_SIZE).toSFML());
+	    	circle.setPosition((sprite.pos * TILE_SIZE + inset).toSFML());
 	    	window.draw(circle);
     	}
 

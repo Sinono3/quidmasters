@@ -15,6 +15,9 @@ T Vector2<T>::dot(const Vector2& other) { return x * other.x + y * other.y; }
 template<typename T>
 T Vector2<T>::norm() { return sqrt(dot(*this)); }
 
+template<typename T>
+Vector2<T> Vector2<T>::normalized() { return *this * (1.0f / norm()); }
+
 // Operators
 template<typename T>
 Vector2<T> Vector2<T>::operator+(const Vector2 &other) {

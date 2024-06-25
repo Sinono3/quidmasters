@@ -13,6 +13,7 @@ template <typename T> struct Vector2 {
 
 	T dot(const Vector2& other);
 	T norm();
+	Vector2 normalized();
 	
 	// Operators
 	Vector2 operator+(const Vector2 &other);
