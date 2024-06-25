@@ -26,9 +26,10 @@ Map<9ul, 10ul> map{{
 
 int main() {
 	sf::ContextSettings settings;
-	// settings.depthBits = 24;
-	settings.majorVersion = 4;
-	settings.minorVersion = 0;
+	settings.depthBits = 24;
+	settings.majorVersion = 3;
+	settings.minorVersion = 3;
+	settings.attributeFlags = sf::ContextSettings::Attribute::Core;
 
 	sf::Clock clock;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "A lonely dungeon",
@@ -36,69 +37,10 @@ int main() {
 	window.setVerticalSyncEnabled(true);
 	window.setActive(true);
 	gladLoadGL();
-	// glEnable(GL_DEPTH_TEST);
-	// glDepthFunc(GL_LESS);
-	// glDepthMask(GL_FALSE);
-	// glEnable(GL_CULL_FACE);  
-	// glCullFace(GL_BACK);
+	glEnable(GL_DEPTH_TEST);
 
 	// Compile shader
-	const char *vertex = R"glsl(
-		#version 400
-
-		uniform mat4 projection;
-		uniform mat4 view;
-		uniform mat4 model;
-
-		layout(location = 0) in vec3 position;
-		out vec3 viewPosition;
-
-		void main() {
-			viewPosition = (view * model * vec4(position, 1.0)).xyz;
-			gl_Position = projection * view * model * vec4(position, 1.0);
-		}
-	)glsl";
-	const char *fragment = R"glsl(
-		#version 400
-
-		uniform float time;
-
-		in vec3 viewPosition;
-		out vec4 color;
-
-		float sin01(float x) {
-			return (sin(x) + 1.0f) / 2.0f;
-		}
-
-		void main() {
-			// Distance to camera
-			vec3 cameraToFragment = viewPosition;
-			float lightingLevel = 1.0f / dot(cameraToFragment, cameraToFragment);
-			float noisedLightingLevel = 
-				  (0.2f * lightingLevel * sin01(time * 1.0f + 5.0f))
-				+ (0.2f * lightingLevel * sin01(time * 3.0f + 4.0f))
-				+ (0.2f * lightingLevel * sin01(time * 5.0f + 3.0f))
-				+ (0.2f * lightingLevel * sin01(time * 7.0f + 2.0f))
-				+ (0.2f * lightingLevel * sin01(time * 9.0f + 1.0f));
-			vec4 darkness = vec4(0.01f, 0.01f, 0.02f, 1.0f);
-			vec4 trueColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-			color = mix(darkness, trueColor, noisedLightingLevel);
-		}
-	)glsl";
 	Shader shader(vertex, fragment);
-
-	// float vertices[] = {
-	// 	0.5f,  0.5f,  0.0f, // top right
-	// 	0.5f,  -0.5f, 0.0f, // bottom right
-	// 	-0.5f, -0.5f, 0.0f, // bottom left
-	// 	-0.5f, 0.5f,  0.0f	// top left
-	// };
-	// unsigned int indices[] = {
-	// 	// note that we start from 0!
-	// 	0, 1, 3, // first Triangle
-	// 	1, 2, 3	 // second Triangle
-	// };
-	// Model model(vertices, indices);
 	Model model = buildMapModel<9ul, 10ul>(map);
 
 	Vector2f playerSpawnPos;
@@ -122,7 +64,7 @@ int main() {
 			if (event.type == sf::Event::Closed) {
 				window.close();
 			} else if (event.type == sf::Event::Resized) {
-				glViewport(0, 0, event.size.width, event.size.height);
+				// glViewport(0, 0, event.size.width, event.size.height);
 			}
 		}
 
@@ -188,21 +130,18 @@ int main() {
 		// uniforms.insert({"model", Uniform4x4f{modelMat}});
 		// draw(shader, model, uniforms);
 
-		// window.pushGLStates();
-		// window.resetGLStates();
-		
+		window.pushGLStates();
+		window.resetGLStates();
+	
 		// Disable depth testing for 2D rendering
-		// glDisable(GL_DEPTH_TEST);
-
-		sf::View view2(sf::FloatRect(0, 0, window.getSize().x, window.getSize().y));
-		window.setView(view2);
-
+		glDisable(GL_DEPTH_TEST);
+		
 		sf::RectangleShape shape(sf::Vector2f(100.0f, 100.0f));
 		shape.setPosition(400.0, 300.0);
 		shape.setFillColor(sf::Color::White);
 		window.draw(shape);
+		window.popGLStates();
 
-		// window.popGLStates();
 		window.display();
 	}
 }
