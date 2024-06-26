@@ -1,4 +1,4 @@
-#include "Vector2.hpp"
+#include "math/Vector2.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <iostream>

@@ -1,5 +1,5 @@
 # SRC = src/main.cpp src/Face.cpp
-SRC = src/Dungeon.cpp src/glad.c src/Shader.cpp src/Model.cpp src/draw.cpp
+SRC = src/Dungeon.cpp src/glad.c src/Shader.cpp src/Model.cpp src/draw.cpp src/Player.cpp
 BUILDDIR = build
 EXE = build/pou
 

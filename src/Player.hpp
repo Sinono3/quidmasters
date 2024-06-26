@@ -1,0 +1,30 @@
+#include <cmath>
+#include <SFML/Graphics.hpp>
+#include "math/Vector2.hpp"
+
+struct Player {
+	Vector2f pos = {2.0f, 2.0f};
+    float angle = 0.0f;
+    float health = 10.0f, maxHealth = 10.0f;
+
+    Vector2f getForward() {
+    	return transformVector(Vector2f(1.0f, 0.0f));
+	}
+
+    Vector2f transformVector(const Vector2f& vector) {
+    	return Vector2f(
+	    	vector.x * cos(angle) - vector.y * sin(angle),
+	    	vector.x * sin(angle) + vector.y * cos(angle)
+	    );
+    }
+
+	Vector2f inverseTransformVector(const Vector2f& vector) {
+		return Vector2f(
+			vector.x * cos(angle) + vector.y * sin(angle),
+			-vector.x * sin(angle) + vector.y * cos(angle)
+		);
+	}
+
+	void processInput(const sf::RenderWindow& window, float dt);
+};
+
