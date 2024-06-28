@@ -1,5 +1,5 @@
 # SRC = src/main.cpp src/Face.cpp
-SRC = src/Dungeon.cpp src/draw.cpp src/Face.cpp src/Store.cpp src/aabb.cpp src/Fog.cpp src/systems/player.cpp src/systems/waves.cpp src/systems/bullets.cpp src/GameSound.cpp
+SRC = src/Dungeon.cpp src/draw.cpp src/Face.cpp src/Store.cpp src/aabb.cpp src/Fog.cpp src/GameSound.cpp src/systems/player.cpp src/systems/waves.cpp src/systems/bullets.cpp src/systems/enemy.cpp
 BUILDDIR = build
 EXE = build/pou
 

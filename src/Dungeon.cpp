@@ -72,8 +72,6 @@ int main() {
 		std::cerr << "We're fucked!" << std::endl;
 	}
 
-	const float RADIUS = 1.0f;
-
 	GameState state;
 	Store store;
 	// This variable is set when the player loses
@@ -126,91 +124,10 @@ int main() {
 				// Wave system and enemy spawning
 				waves(state, frame);
 
-
-
-
-
-
-
-
-
-
-
-				
-				// Enemy AI
-				for (auto& enemy : state.enemies) {
-					// Movement
-		    		Vector2f targetVel = (state.player.pos - enemy.pos).normalized() * enemy.maxSpeed;
-		    		Vector2f velDiff = targetVel - enemy.vel;
-		    		Vector2f accel = velDiff;
-		    		if (velDiff.norm() > (enemy.acceleration * dt)) {
-						accel = velDiff.normalized() * enemy.acceleration;
-					} else {
-						accel = velDiff;
-					}
-				    enemy.vel = enemy.vel + accel * dt;
-		    		enemy.pos = enemy.pos + enemy.vel * dt;
-
-		    		// Damage player
-					if (aabb(state.player.pos.x - RADIUS, state.player.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f, enemy.pos.x - RADIUS, enemy.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f)) {
-						state.player.health -= 0.1f;
-					}
-				}
-
-				// Enemy collision
-				for (int i = 0; i < state.enemies.size(); i++) {
-					auto& a = state.enemies[i];
-
-					// Collision with other enemies
-					for (int j = 0; j < state.enemies.size(); j++) {
-						if (i == j) continue;
-						auto& b = state.enemies[j];
-
-						if (aabb(a.pos.x - RADIUS, a.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f, b.pos.x - RADIUS, b.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f)) {
-							Vector2f awayFromB = a.pos - b.pos;
-							a.vel = a.vel + awayFromB * 0.5f;
-						}
-					}
-				}
-
-				// enemy health and death
-				for (std::vector<Enemy>::iterator mit = state.enemies.begin(); mit != state.enemies.end(); ) {
-					auto& enemy = *mit;
-					if (enemy.health <= 0.0f) {
-						// Add coins and nourishment 
-						// TODO: Constant??
-						auto coinsAdd = std::uniform_int_distribution(1, 6)(rng);
-						auto nourishAdd = std::uniform_real_distribution(0.0f, 5.0f)(rng);
-						state.player.nourishment = std::max(std::min(state.player.nourishment + nourishAdd, state.player.maxNourishment), 0.0f);
-						state.player.coins += coinsAdd;
-
-						// Play cash effect
-						sound.cash.setVolume(100.0f);
-						sound.cash.play();
-
-						// Delete enemy
-						mit = state.enemies.erase(mit);
-					} else {
-						mit++;
-					}
-				}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				
+				// Enemy systems
+				enemy::ai(state, frame);
+				enemy::collision(state, frame);
+				enemy::death(state, frame, sound);
 
 				// Store stuff (hover on item, buy items)
 				store.update(window, state);
