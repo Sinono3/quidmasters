@@ -2,7 +2,8 @@
 #include <SFML/System.hpp>
 #include <glm/vec2.hpp>
 
-template <typename T> struct Vector2 {
+template <typename T>
+struct Vector2 {
 	T x, y;
 	Vector2();
 	Vector2(T x, T y);
@@ -11,22 +12,23 @@ template <typename T> struct Vector2 {
 	Vector2(sf::Vector2<T>);
 	Vector2(glm::vec2);
 
-	T dot(const Vector2& other);
-	T norm();
-	Vector2 normalized();
+	T dot(const Vector2& other) const;
+	T norm() const;
+	Vector2 normalized() const;
+	Vector2 rotate(float angle) const;
 	
 	// Operators
-	Vector2 operator+(const Vector2 &other);
-	Vector2 operator-(const Vector2 &other);
-	Vector2 operator-();
-	Vector2 operator*(T scalar);
+	Vector2 operator+(const Vector2 &other) const;
+	Vector2 operator-(const Vector2 &other) const;
+	Vector2 operator-() const;
+	Vector2 operator*(T scalar) const;
 	// friend Vector2 operator*(T scalar, const Vector2 &vector);
 
 	// Conversion
-	sf::Vector2<T> toSFML();
-	glm::vec2 toGLM();
+	sf::Vector2<T> toSFML() const;
+	glm::vec2 toGLM() const;
 	template<typename U>
-	Vector2<U> to();
+	Vector2<U> to() const;
 };
 
 using Vector2f = Vector2<float>;

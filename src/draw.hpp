@@ -1,16 +1,13 @@
 #pragma once
-#include "Model.hpp"
-#include "Shader.hpp"
-#include <map>
-#include <glm/glm.hpp>
+#include "GameState.hpp"
+#include <SFML/Graphics.hpp>
 
-struct Uniform1f {
-	float x;
+struct DrawContext {
+ sf::RenderWindow& window;
+ const sf::Font& font;
+ float time;
 };
-struct Uniform4x4f {
-	glm::mat4 mat;
-};
-using Uniform = std::variant<Uniform1f, Uniform4x4f>;
-using Uniforms = std::map<std::string, Uniform>;
 
-void draw(const Shader &shader, const Model &model, Uniforms uniforms);
+namespace draw {
+ void gameOver(const GameState& state, DrawContext& context);
+}

@@ -148,7 +148,7 @@ struct Pet {
 		}
 
 		// Face
-		Face face;
+		Face face(sf::Vector2f(400.0f, 300.0f));
 		face.frown = (happiness / maxHappiness) * 2.0 - 1.0;
 		face.draw(window);
 	}

@@ -10,49 +10,55 @@ template<typename T>
 Vector2<T>::Vector2(glm::vec2 v) : x(v.x), y(v.y) { }
 
 template<typename T>
-T Vector2<T>::dot(const Vector2& other) { return x * other.x + y * other.y; }
+T Vector2<T>::dot(const Vector2& other) const { return x * other.x + y * other.y; }
 
 template<typename T>
-T Vector2<T>::norm() { return sqrt(dot(*this)); }
+T Vector2<T>::norm() const { return sqrt(dot(*this)); }
 
 template<typename T>
-Vector2<T> Vector2<T>::normalized() { return *this * (1.0f / norm()); }
+Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }
+
+template <typename T> Vector2<T> Vector2<T>::rotate(float angle) const {
+	return Vector2f(x * cos(angle) - y * sin(angle),
+					x * sin(angle) + y * cos(angle));
+}
 
 // Operators
 template<typename T>
-Vector2<T> Vector2<T>::operator+(const Vector2 &other) {
+Vector2<T> Vector2<T>::operator+(const Vector2 &other) const {
 	return Vector2(x + other.x, y + other.y);
 }
 template<typename T>
-Vector2<T> Vector2<T>::operator-(const Vector2 &other) {
+Vector2<T> Vector2<T>::operator-(const Vector2 &other) const {
 	return Vector2(x - other.x, y - other.y);
 }
 template<typename T>
-Vector2<T> Vector2<T>::operator-() { return Vector2(-x, -y); }
+Vector2<T> Vector2<T>::operator-() const {
+	 return Vector2(-x, -y); }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator*(T scalar) {
+Vector2<T> Vector2<T>::operator*(T scalar) const {
 	return Vector2(scalar * x, scalar * y);
 }
 
-template<typename T>
-Vector2<T> operator*(T scalar, const Vector2<T> &vector) {
-	return vector * scalar;
-}
+// template<typename T>
+// Vector2<T> operator*(T scalar, const Vector2<T> &vector) const {
+// 	return vector * scalar;
+// }
 
 // Conversion
 template<typename T>
-sf::Vector2<T> Vector2<T>::toSFML() {
+sf::Vector2<T> Vector2<T>::toSFML() const {
 	return sf::Vector2(x, y);
 }
 template<typename T>
-glm::vec2 Vector2<T>::toGLM() {
+glm::vec2 Vector2<T>::toGLM() const {
 	return glm::vec2((float)x, (float)y);
 }
 
 template<typename T>
 template<typename U>
-Vector2<U> Vector2<T>::to() {
+Vector2<U> Vector2<T>::to() const {
 	return { (U)x, (U)y };
 }
 

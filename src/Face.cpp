@@ -1,22 +1,34 @@
 #include "Face.hpp"
 
+Face::Face(sf::Vector2f position) : position(position) { }
+
 void Face::draw(sf::RenderTarget &window) {
-	float initialX = 400;
-	float initialY = 300;
+	float initialX = position.x;
+	float initialY = position.y;
+
+	// head
+	const float HEAD_R = 50.0f;
+	sf::CircleShape head(HEAD_R, 30);
+	head.setPosition(initialX - HEAD_R, initialY - HEAD_R - 30.0f);
+	head.setFillColor(sf::Color::Black);
+	head.setOutlineColor(sf::Color::White);
+	head.setOutlineThickness(1.0f);
+	window.draw(head);
 
 	// eyes
-	sf::CircleShape eye(10.0, 30.0);
-	eye.setPosition(initialX - 40.0, initialY - 100.0);
+	const float R = 5.0f;
+	sf::CircleShape eye(R, 10.0f);
+	eye.setPosition(initialX - 20.0 - R, initialY - 50.0 - R);
 	eye.setFillColor(sf::Color::White);
 	window.draw(eye);
-	eye.setPosition(initialX + 40.0, initialY - 100.0);
+	eye.setPosition(initialX + 20.0 - R, initialY - 50.0 - R);
 	window.draw(eye);
 
 	// smile
 	const int POINT_COUNT = 10;
 	sf::Vertex points[POINT_COUNT];
-	auto hMax = -40.0 * frown;
-	auto hMin = 0.0;
+	auto hMax = -20.0f * frown;
+	auto hMin = 0.0f;
 	auto width = (float)(POINT_COUNT - 1);
 	auto a = 4.0 * (hMax - hMin) / (width * width);
 

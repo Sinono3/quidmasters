@@ -1,30 +1,39 @@
 #include "draw.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
- 
-// helper type for the visitor #4
-template<class... Ts>
-struct overloaded : Ts... { using Ts::operator()...; };
-// explicit deduction guide (not needed as of C++20)
-template<class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
+#include "GameState.hpp"
+#include <string>
 
-void draw(const Shader &shader, const Model &model, Uniforms uniforms) {
-	shader.bind();
+void draw::gameOver(const GameState& state, DrawContext& context) {
+	auto& window = context.window;
+	auto& font = context.font;
 
-	// Load uniforms
-    for ( const auto &kv : uniforms ) {
-    	auto name = kv.first;
-    	auto value = kv.second;
+	// Game over screen
+	std::string subText;
 
-		GLuint location = shader.getUniformLocation(name);
+	switch (state.lostBecause) {
+	case DueToHealth:
+		subText = "You and your pet died.";
+		break;
+	case DueToHunger:
+		subText = "Your pet famished and ate you.";
+		break;
+	case DueToFog:
+		subText = "...";
+		break;
+	}
+	subText.append("\nPress Enter to restart.");
 
-		std::visit(overloaded {
-		  [&](Uniform1f u) { glUniform1f(location, u.x); },
-		  [&](Uniform4x4f u) { glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(u.mat)); },
-		}, value);
-    }
+	sf::Text title, subtitle;
+	title.setString("You fuckin lost!");
+	title.setPosition(200.0f, 200.0f);
+	title.setFillColor(sf::Color::Red);
+	title.setFont(font);
+	subtitle.setPosition(200.0f, 300.0f);
+	subtitle.setString(subText);
+	subtitle.setFillColor(sf::Color::White);
+	subtitle.setFont(font);
 
-	model.draw();
-	shader.unbind();
+	window.clear(sf::Color(12, 2, 2));
+	window.draw(title);
+	window.draw(subtitle);
+	window.display();
 }

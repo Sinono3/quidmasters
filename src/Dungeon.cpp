@@ -1,8 +1,18 @@
+#include "Face.hpp"
+
+#include "GameSound.hpp"
+#include "GameState.hpp"
+#include "Fog.hpp"
+#include "draw.hpp"
 #include "math/Vector2.hpp"
 #include "Gun.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "Bullet.hpp"
+#include "Store.hpp"
+#include "aabb.hpp"
+#include "Constants.hpp"
+#include "systems.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <cmath>
@@ -10,15 +20,9 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 std::default_random_engine rng;
-
-const int SCREEN_WIDTH = 800;
-const int SCREEN_HEIGHT = 600;
-
-bool aabb(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2) {
-	return (x1 < x2 + w2) && (x1 + w1 > x2) && (y1 < y2 + h2) && (y1 + h1 > h2);
-}
 
 void drawStatusBar(sf::RenderTarget &window, const sf::Font &font,
 				   const char *label, float var, float max, float x, float y,
@@ -42,12 +46,18 @@ void drawStatusBar(sf::RenderTarget &window, const sf::Font &font,
 	text.setString(label);
 	text.setPosition(x, y);
 	text.setCharacterSize(20);
-	text.setFillColor(fill);
-	text.setOutlineColor(bg);
+	text.setFillColor(sf::Color::Black);
+
 	if (fraction >= 0.0 && fraction < 0.1) fraction = 0.1;
 	if (fraction <= 0.0 && fraction > -0.1) fraction = -0.1;
-	float thickness = (1.0 / fraction) * 3.0;
+	sf::Color outlineColor = sf::Color(
+	                                   (fill.r * fraction + bg.r  + (1.0f - fraction)* (1.0f - fraction)), 
+	                                   (fill.g * fraction + bg.g  + (1.0f - fraction)* (1.0f - fraction)), 
+	                                   (fill.b * fraction + bg.b  + (1.0f - fraction)* (1.0f - fraction))
+	                               );
+	float thickness = 0.2 + (1.0 / fraction) * 1.0;
 
+	text.setOutlineColor(outlineColor);
 	text.setOutlineThickness(thickness);
 	window.draw(text);
 }
@@ -55,185 +65,314 @@ void drawStatusBar(sf::RenderTarget &window, const sf::Font &font,
 int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
-    sf::Sound sound;
-
 	sf::Font font;
-    sf::SoundBuffer sfxMG;
+	GameSound sound;
+	
+	if (!font.loadFromFile("fonts/papyrus.ttf")) {
+		std::cerr << "We're fucked!" << std::endl;
+	}
 
-    if (!sfxMG.loadFromFile("sfx/mg.wav") || !font.loadFromFile("fonts/papyrus.ttf")) {
-		std::cerr << "We're fucked" << std::endl;
-        return 1;
-    }
+	const float RADIUS = 1.0f;
 
-    Player player;
-    Gun gun{
-    	// .firePeriod = new UniVar(0.4f, 0.9f),
-    	.firePeriod = new UniVar(0.0f, 0.05f),
-    	.damage = new UniVar(3.9f, 4.1f),
-    	.knockback = new UniVar(0.0f, 0.3f),
-    	.bulletSpeed = new UniVar(80.0f, 100.0f),
-    };
-    // Gun gun{
-    // 	.firePeriod = new UniVar(0.08f, 0.1f),
-    // 	.damage = new UniVar(3.9f, 4.1f),
-    // 	.knockback = new UniVar(0.0f, 0.3f),
-    // 	.bulletSpeed = new UniVar(100.0f, 200.0f),
-    // };
-	EnemyClass zombie{
-		.maxSpeed = 20.0f, .acceleration = 180.0f,
-		.maxHealth = 10.0f,
-		.size = 2.0f
-	};
+	GameState state;
+	Store store;
+	// This variable is set when the player loses
+	Fog fog;
+    Vector2f cameraPos;
 
-	const float ENEMY_SPAWN_PERIOD = 2.0f;
-	std::vector<Enemy> enemies;
-	float enemySpawnTime = 0.0f;
-
+	sf::Clock time;
 	sf::Clock deltaClock;
-    sf::Clock machineGun;
-    float machineGunTime = 0.1f;
-    std::vector<Bullet> bullets;
 
     while (window.isOpen()) {
-    	float dt = deltaClock.restart().asSeconds();
-
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
-        // Player movement
-        player.processInput(window, dt);
-        // Player guns
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-			if (machineGun.getElapsedTime().asSeconds() > machineGunTime) {
-				machineGun.restart();
+        DrawContext drawCtx {
+        	.window = window,
+        	.font = font,
+        	.time = time.getElapsedTime().asSeconds(),
+        };
 
-				// Fire, fire, fire
-				machineGunTime = gun.firePeriod->get(rng);
-				auto damage = gun.damage->get(rng);
-				auto knockback = gun.knockback->get(rng);
-				auto speed = gun.bulletSpeed->get(rng);
+		const float TILE_SIZE = 10.0f;
+		Vector2f screenSize (SCREEN_WIDTH / TILE_SIZE, SCREEN_HEIGHT / TILE_SIZE);
+		Vector2f screenCenter = screenSize * (1.0f / 2.0f);
+		Vector2f screenMousePos = Vector2i(sf::Mouse::getPosition(window)).to<float>();
+		Vector2f mousePos = (screenMousePos * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
+    	float dt = deltaClock.restart().asSeconds();
 
-				// Add bullet
-				auto pos = player.pos;
-				auto vel = player.getForward() * speed;
-				bullets.push_back(Bullet{pos, vel, damage, knockback});
+		FrameContext frame {
+			 // Delta time
+			 .dt = dt,
+			 // In world space
+			 .screenSize = screenSize, // Vector (not point)
+			 .screenCenter = screenCenter, // Vector (not point)
+			 .mousePos = mousePos,
+			 .cameraPos = cameraPos,
+			 .rng = rng
+		};
 
-				// Play sound effect
-				std::normal_distribution n(1.0, 0.01);
-				sound.setBuffer(sfxMG);
-				sound.setPitch(n(rng));
-				sound.setVolume(50.0f);
-				sound.play();
-			}
-		}
+        switch (state.stage) {
+        	case GameStage::Playing:
+				player::movement(state, frame);
+				player::guns(state, frame, sound);
+				player::hunger(state, frame);
+				player::loseCondition(state, frame);
 
-		// Bullet collisions
-		for (std::vector<Bullet>::iterator mit = bullets.begin(); mit != bullets.end(); ) {
-			auto& bullet = *mit;
-			bullet.pos = bullet.pos + bullet.vel * dt;
+				// Bullets
+				bullets(state, frame);
+				// Wave system and enemy spawning
+				waves(state, frame);
 
-			std::optional<Enemy*> collidedWith;
 
-	    	for (auto& enemy: enemies) {
-				if (aabb(bullet.pos.x, bullet.pos.y, 0.1f, 0.1f, enemy.pos.x - 0.5f, enemy.pos.y - 0.5f, 1.0f, 1.0f)) {
-					collidedWith = &enemy;
-					break;
+
+
+
+
+
+
+
+
+
+				
+				// Enemy AI
+				for (auto& enemy : state.enemies) {
+					// Movement
+		    		Vector2f targetVel = (state.player.pos - enemy.pos).normalized() * enemy.maxSpeed;
+		    		Vector2f velDiff = targetVel - enemy.vel;
+		    		Vector2f accel = velDiff;
+		    		if (velDiff.norm() > (enemy.acceleration * dt)) {
+						accel = velDiff.normalized() * enemy.acceleration;
+					} else {
+						accel = velDiff;
+					}
+				    enemy.vel = enemy.vel + accel * dt;
+		    		enemy.pos = enemy.pos + enemy.vel * dt;
+
+		    		// Damage player
+					if (aabb(state.player.pos.x - RADIUS, state.player.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f, enemy.pos.x - RADIUS, enemy.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f)) {
+						state.player.health -= 0.1f;
+					}
 				}
-			}
 
-			if (collidedWith.has_value()) {
-				auto& enemy = *collidedWith.value();
-				enemy.vel = enemy.vel + bullet.vel * bullet.knockback;
-				// Remove bullet from bullets
-				mit = bullets.erase(mit);
-			} else {
-				mit++;
-			}
-		}
+				// Enemy collision
+				for (int i = 0; i < state.enemies.size(); i++) {
+					auto& a = state.enemies[i];
 
-		// Enemy spawning
-    	enemySpawnTime += dt;
-    	if (enemySpawnTime > ENEMY_SPAWN_PERIOD) {
-    		enemySpawnTime = 0.0f;
+					// Collision with other enemies
+					for (int j = 0; j < state.enemies.size(); j++) {
+						if (i == j) continue;
+						auto& b = state.enemies[j];
 
-    		Enemy newEnemy = zombie.produce();
-    		newEnemy.pos.x = std::uniform_real_distribution<float>(0.0f, 40.0f)(rng);
-    		newEnemy.pos.y = std::uniform_real_distribution<float>(0.0f, 30.0f)(rng);
-    		enemies.push_back(newEnemy);
+						if (aabb(a.pos.x - RADIUS, a.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f, b.pos.x - RADIUS, b.pos.y - RADIUS, RADIUS * 2.0f, RADIUS * 2.0f)) {
+							Vector2f awayFromB = a.pos - b.pos;
+							a.vel = a.vel + awayFromB * 0.5f;
+						}
+					}
+				}
+
+				// enemy health and death
+				for (std::vector<Enemy>::iterator mit = state.enemies.begin(); mit != state.enemies.end(); ) {
+					auto& enemy = *mit;
+					if (enemy.health <= 0.0f) {
+						// Add coins and nourishment 
+						// TODO: Constant??
+						auto coinsAdd = std::uniform_int_distribution(1, 6)(rng);
+						auto nourishAdd = std::uniform_real_distribution(0.0f, 5.0f)(rng);
+						state.player.nourishment = std::max(std::min(state.player.nourishment + nourishAdd, state.player.maxNourishment), 0.0f);
+						state.player.coins += coinsAdd;
+
+						// Play cash effect
+						sound.cash.setVolume(100.0f);
+						sound.cash.play();
+
+						// Delete enemy
+						mit = state.enemies.erase(mit);
+					} else {
+						mit++;
+					}
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+
+				// Store stuff (hover on item, buy items)
+				store.update(window, state);
+        		break;
+    		case GameStage::Lost:
+	        	draw::gameOver(state, drawCtx);
+
+	        	// Restart with enter
+	        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+	        		state = GameState();
+	        	}
+    			break;
     	}
 
-		// Enemy AI
-		for (auto &enemy : enemies) {
-    		Vector2f targetVel = (player.pos - enemy.pos).normalized() * enemy.maxSpeed;
-    		Vector2f accel = targetVel - enemy.vel;
-    		// if (accel.norm() > enemy.acceleration)
-				accel = accel.normalized() * enemy.acceleration;
-		    enemy.vel = enemy.vel + accel * dt;
-    		// enemy.vel = targetVel;
-    		enemy.pos = enemy.pos + enemy.vel * dt;
-		}
-
-
-
+		// Update camera pos
+		// cameraPos = state.player.pos;
+		cameraPos = screenCenter;
 
 		// Draw the game
-		const float TILE_SIZE = 20.0f;
 		window.clear(sf::Color(3, 2, 2));
 
-    	// Draw player
-    	auto radius = 10.0f;
-    	auto inset = Vector2f(-radius, - radius);
+		// Screen size in game units
+		auto cameraTransform = sf::Transform()
+								   .scale(TILE_SIZE, TILE_SIZE)
+								   .translate((-cameraPos + screenCenter).toSFML());
 
-    	sf::CircleShape circle(radius, 20);
-    	circle.setFillColor(sf::Color::Green);
-    	circle.setPosition((player.pos * TILE_SIZE + inset).toSFML());
-    	window.draw(circle);
+		// used for game world rendering
+		sf::RenderStates worldRenderState;
+	    worldRenderState.transform = cameraTransform;
+
+	    // Draw initial border
+	    sf::RectangleShape gameBorder(screenSize.toSFML());
+	    gameBorder.setFillColor(sf::Color::Transparent);
+	    gameBorder.setOutlineColor(sf::Color::White);
+	    gameBorder.setOutlineThickness(1.0f);
+	    window.draw(gameBorder, worldRenderState);
+
+    	// Draw player
+    	auto inset = Vector2f(-RADIUS, -RADIUS);
+    	sf::CircleShape playerCircle(RADIUS, 20);
+    	playerCircle.setFillColor(sf::Color::Green);
+    	playerCircle.setPosition((state.player.pos + inset).toSFML());
+    	window.draw(playerCircle, worldRenderState);
 
     	// Draw player direction
 	    sf::Vertex line[] = {
-	        sf::Vertex((player.pos * TILE_SIZE).toSFML(), sf::Color::Green),
-	        sf::Vertex(((player.pos + player.getForward()) * TILE_SIZE).toSFML(), sf::Color::Red)
+	        sf::Vertex(state.player.pos.toSFML(), sf::Color::Green),
+	        sf::Vertex((state.player.pos + state.player.getForward()).toSFML(), sf::Color::Red)
 	    };
-	    window.draw(line, 2, sf::Lines);
+	    window.draw(line, 2, sf::Lines, worldRenderState);
 
     	// Draw sprites
-    	for (auto& enemy: enemies) {
-	    	sf::CircleShape circle(radius, 20);
-	    	circle.setFillColor(sf::Color::Blue);
-	    	circle.setPosition((enemy.pos * TILE_SIZE + inset).toSFML());
-			window.draw(circle);
+    	for (auto& enemy: state.enemies) {
+	    	auto inset = Vector2f(-enemy.radius, -enemy.radius);
+	    	sf::CircleShape circle(enemy.radius, 20);
+	    	circle.setFillColor(enemy.color);
+	    	circle.setPosition((enemy.pos + inset).toSFML());
+			window.draw(circle, worldRenderState);
 		}
 
 		// Draw bullets
-    	for (auto& bullet: bullets) {
-	  //   	sf::CircleShape circle(1.0f, 20);
-	  //   	circle.setFillColor(sf::Color::Red);
-	  //   	circle.setPosition((bullet.pos * TILE_SIZE).toSFML());
-			// window.draw(circle);
+    	for (auto& bullet: state.bullets) {
 		    sf::Vertex line[] = {
-		        sf::Vertex(((bullet.pos - bullet.vel * 0.01f) * TILE_SIZE).toSFML(), sf::Color::Green),
-		        sf::Vertex(((bullet.pos) * TILE_SIZE).toSFML(), sf::Color::Red)
+		        sf::Vertex((bullet.pos - bullet.vel * 0.01f).toSFML(), sf::Color::Green),
+		        sf::Vertex((bullet.pos).toSFML(), sf::Color::Red)
 		    };
-		    window.draw(line, 2, sf::Lines);
+		    window.draw(line, 2, sf::Lines, worldRenderState);
 		}
 
-		// Draw statusbars
-		drawStatusBar(window, font, "health", player.health, player.maxHealth,
-					  0.0, 0.0, 140.0, 30.0, sf::Color::Green, sf::Color::Red);
-		// drawStatusBar(window, font, "not-hunger", nourishment,
-		// 			  maxNourishment, 150.0, 0.0, 100.0, 32.0,
-		// 			  sf::Color::Yellow, sf::Color::Red);
-		// drawStatusBar(window, font, "happiness", happiness,
-		// 			  maxHappiness, 300.0, 0.0, 100.0, 49.0,
-		// 			  sf::Color::Cyan, sf::Color::Red);
+		fog.notoriety = (state.player.pos - screenCenter).norm() / 2000.0f;
+		fog.draw(window, font, time.getElapsedTime().asSeconds());
 
-		// sf::Text text;
-		// text.setFont(font);
-		// text.setString("Health");
-		// window.draw(text);
+		// Draw statusbars
+		drawStatusBar(window, font, "health", state.player.health, state.player.maxHealth,
+					  0.0, 0.0, 140.0, 30.0, sf::Color::Green, sf::Color::Red);
+		drawStatusBar(window, font, "not-hunger", state.player.nourishment,
+					  state.player.maxNourishment, 150.0, 0.0, 100.0, 32.0,
+					  sf::Color::Yellow, sf::Color::Red);
+		drawStatusBar(window, font, "fog-awareness", state.player.sanity,
+					  state.player.maxSanity, 330.0, 0.0, 100.0, 49.0,
+					  sf::Color(100, 100, 100), sf::Color::Red);
+
+		// Reloading
+		drawStatusBar(window, font, "time",
+					  std::min(state.gunCooldown.getElapsedTime().asSeconds(), state.gunCooldownTime),
+					  state.gunCooldownTime, 200.0, 560.0, 30.0, 20.0,
+					  sf::Color(100, 100, 100), sf::Color::Red);
+
+		// Draw pet face
+
+		{
+			// Make face float around
+			float t = time.getElapsedTime().asSeconds();
+			float x = 720.0f + 5.0f * std::sin(t + 1.41f);
+			float y = 90.0f + 2.0f * std::cos(t * 2.0f);
+
+			Face face(sf::Vector2f(x, y));
+			float howsItGoin =
+				((state.player.health / state.player.maxHealth) +
+				 (state.player.nourishment / state.player.maxNourishment) +
+				 (state.player.sanity / state.player.maxSanity)) /
+				3.0f;
+			face.frown = (howsItGoin * 3.0) - 2.0;
+			face.draw(window);
+		}
+
+		// Show coins
+		{
+			std::stringstream ss;
+			ss << "Quid: ";
+			ss << state.player.coins;
+			sf::Text text;
+			text.setFont(font);
+			text.setString(ss.str());
+			text.setPosition(500.0, 0.0);
+			text.setCharacterSize(40);
+			window.draw(text);
+		}
+
+		// Show wave
+		{
+			std::stringstream ss;
+			if (state.inWave) {
+				ss << "Wave: ";
+				ss << state.wave;
+				drawStatusBar(
+					window,
+					font,
+					ss.str().c_str(),
+					state.timeTillNext,
+					// WAVE_TIME,
+					30.0f,
+					670, 540,
+					100, 60,
+					sf::Color::Green,
+					sf::Color::Black
+				);
+			} else {
+				ss << "breaktime";
+				drawStatusBar(
+					window,
+					font,
+					ss.str().c_str(),
+					state.timeTillNext,
+					// BREAK_TIME,
+					20.0f,
+					670, 540,
+					130, 60,
+					sf::Color::Yellow,
+					sf::Color::Black
+				);
+			}
+			// sf::Text text;
+			// text.setFont(font);
+			// text.setString(ss.str());
+			// text.setPosition(670.0, 540.0);
+			// text.setCharacterSize(30);
+			// window.draw(text);
+		}
+
+		// Show store items
+		store.render(window, font);
 
 		window.display();
     }
