@@ -33,3 +33,6 @@ void ai(GameState &state, const FrameContext &frame);
 void collision(GameState &state, const FrameContext &frame);
 void death(GameState &state, const FrameContext &frame, GameSound &sound);
 }; // namespace enemy
+
+// Message system
+void message(GameState &state, const FrameContext &frame);

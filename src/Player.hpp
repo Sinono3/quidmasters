@@ -11,18 +11,18 @@ struct Player {
     float sanity = 10.0f, maxSanity = 10.0f;
     int coins = 0;
 
-    Vector2f getForward() {
+    Vector2f getForward() const {
     	return transformVector(Vector2f(1.0f, 0.0f));
 	}
 
-    Vector2f transformVector(const Vector2f& vector) {
+    Vector2f transformVector(const Vector2f& vector) const {
     	return Vector2f(
 	    	vector.x * cos(angle) - vector.y * sin(angle),
 	    	vector.x * sin(angle) + vector.y * cos(angle)
 	    );
     }
 
-	Vector2f inverseTransformVector(const Vector2f& vector) {
+	Vector2f inverseTransformVector(const Vector2f& vector) const {
 		return Vector2f(
 			vector.x * cos(angle) + vector.y * sin(angle),
 			-vector.x * sin(angle) + vector.y * cos(angle)

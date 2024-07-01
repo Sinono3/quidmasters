@@ -1,27 +1,7 @@
 #include "../systems.hpp"
+#include "../Constants.hpp"
 
-const float WAVE_TIME = 30.0f;
-const float BREAK_TIME = 20.0f;
-
-const int ENEMY_CLASS_COUNT = 2;
-const EnemyClass ENEMY_CLASSES[ENEMY_CLASS_COUNT]{
-	// Standard zombie
-	{
-		.maxSpeed = 10.0f, .acceleration = 180.0f,
-		.maxHealth = 10.0f,
-		.radius = 1.0f,
-		.color = sf::Color(0, 200, 0, 255),
-	},
-	// big zomba
-	{
-		.maxSpeed = 5.0f, .acceleration = 180.0f,
-		.maxHealth = 40.0f,
-		.radius = 2.0f,
-		.color = sf::Color(100, 0, 100, 255),
-	},
-};
-
-void getWaveEnemyClasses(int enemyClassCount[], int wave) {
+void getWaveEnemyClasses(EnemyClassCounter& enemyClassCount, int wave) {
 	// Normal zombie
 	enemyClassCount[0] = wave * 10;
 	// Big zombie
@@ -29,34 +9,62 @@ void getWaveEnemyClasses(int enemyClassCount[], int wave) {
 }
 
 void waves(GameState &state, const FrameContext &frame) {
-	if (state.inWave) {
-		if (state.timeTillNext <= 0) {
-			state.inWave = false;
-			state.timeTillNext = BREAK_TIME;
-		}
-	} else {
-		// In break
-		if (state.timeTillNext <= 0) {
-			state.inWave = true;
-			state.timeTillNext = WAVE_TIME;
-			state.wave++;
+	if (!state.inBreak) {
+		// Count of enemies that are spawned in this wave
+		int totalEnemyCount = 0;
+		// Check if wave is over
+		bool noEnemies = state.enemies.size() == 0;
+		bool allEnemiesSpawned = true;
 
-			// Enemies per wave
-			getWaveEnemyClasses(state.enemyClassCount, state.wave);
+		for (int i = 0; i < ENEMY_CLASS_COUNT; i++) {
+			totalEnemyCount += state.enemyClassCount[i];
+			if (state.spawnedEnemyClassCount[i] != state.enemyClassCount[i]) {
+				allEnemiesSpawned = false;
+				break;
+			}
+		}
+		// The wave is over once all the enemies have spawned 
+		// and there are no longer any enemies alive.
+		bool waveOver = noEnemies && allEnemiesSpawned;
+
+		if (waveOver) {
+			state.inBreak = true;
+			state.breakTime = BREAK_TIME;
+			return;
+		}
+
+		// Spawn enemies
+		state.enemySpawnTime -= frame.dt;
+		if (state.enemySpawnTime <= 0.0f) {
+			state.enemySpawnTime = ENEMY_SPAWN_TIME / (float)totalEnemyCount;
 
 			for (int cls_idx = 0; cls_idx < ENEMY_CLASS_COUNT; cls_idx++) {
-				for (int i = 0; i < state.enemyClassCount[cls_idx]; i++) {
+				if (state.spawnedEnemyClassCount[cls_idx] < state.enemyClassCount[cls_idx]) {
 					EnemyClass enemyClass = ENEMY_CLASSES[cls_idx];
 					Enemy newEnemy = enemyClass.produce();
 					newEnemy.pos.x = std::uniform_real_distribution<float>(
 						frame.screenSize.x, frame.screenSize.x + 3.0f)(frame.rng);
 					newEnemy.pos.y = std::uniform_real_distribution<float>(
 						0.0f, frame.screenSize.y)(frame.rng);
+
 					state.enemies.push_back(newEnemy);
+					state.spawnedEnemyClassCount[cls_idx]++;				
+				} else {
 				}
 			}
 		}
-	}
 
-	state.timeTillNext -= frame.dt;
+	} else {
+		if (state.breakTime <= 0.0f) {
+			state.inBreak = false;
+			state.wave++;
+
+			// Set new enemy count for this wave
+			getWaveEnemyClasses(state.enemyClassCount, state.wave);
+			// Reset spawned enemy counter
+			state.spawnedEnemyClassCount.fill(0);
+		} else {
+			state.breakTime -= frame.dt;
+		}
+	}
 }

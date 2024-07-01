@@ -1,4 +1,3 @@
-#pragma once
 #include "GameSound.hpp"
 
 GameSound::GameSound() {

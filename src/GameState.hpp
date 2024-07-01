@@ -1,8 +1,10 @@
 #pragma once
 #include "Bullet.hpp"
+#include "Constants.hpp"
 #include "Enemy.hpp"
 #include "Gun.hpp"
 #include "Player.hpp"
+#include <string>
 #include <vector>
 
 enum GameStage {
@@ -14,6 +16,11 @@ enum LoseCondition {
 	DueToHealth,
 	DueToHunger,
 	DueToFog,
+};
+
+struct Message {
+	std::string text;
+	float time;
 };
 
 struct GameState {
@@ -31,10 +38,13 @@ struct GameState {
 	float gunCooldownTime = 0.0f;
 
 	// Wave stuff
-	int enemyClassCount[2];
+	EnemyClassCounter enemyClassCount;
+	EnemyClassCounter spawnedEnemyClassCount;
+	float enemySpawnTime = 1.0f;
 	int wave = 0;
-	bool inWave = false;
-	float timeTillNext = 0.1f;
+	bool inBreak = true;
+	float breakTime = 1.0f;
+	std::optional<Message> message;
 
 	GameState() {
 		stage = GameStage::Playing;

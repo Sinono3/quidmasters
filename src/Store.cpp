@@ -53,18 +53,17 @@ void Store::update(sf::RenderWindow &window, GameState &state) {
 			int index = hoveredOn.value();
 			auto &item = items[index];
 
-			// if (!bought[index] && (state.player.coins >= item.price)) {
-			// 	state.gun = item.gun;
-			// 	bought[index] = true;
-			// 	state.player.coins -= item.price;
-			// 	// Buy the item!
-			// 	std::cout << "Bought item!" << std::endl;
-			// }
+			if (!bought[index] && (state.player.coins >= item.price)) {
+				bought[index] = true;
+				state.player.coins -= item.price;
+				state.guns.push_back(item.gun);
+				std::cout << "Bought item!" << std::endl;
+			}
 		}
 	}
 }
 
-void Store::render(sf::RenderWindow &window, sf::Font &font) {
+void Store::render(sf::RenderWindow &window, const sf::Font &font) {
 	sf::Text storeTitle;
 	storeTitle.setFont(font);
 	storeTitle.setFillColor(sf::Color(200, 200, 200, 100));

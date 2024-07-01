@@ -33,15 +33,15 @@ void player::guns(GameState &state, const FrameContext &frame,
 
 			// Fire, fire, fire
 			auto& gun = state.guns[state.currentGun];
-			state.gunCooldownTime = gun.firePeriod->get(frame.rng);
-			auto damage = gun.damage->get(frame.rng);
-			auto knockback = gun.knockback->get(frame.rng);
-			auto speed = gun.bulletSpeed->get(frame.rng);
+			state.gunCooldownTime = gun.firePeriod.get(frame.rng);
+			auto damage = gun.damage.get(frame.rng);
+			auto knockback = gun.knockback.get(frame.rng);
+			auto speed = gun.bulletSpeed.get(frame.rng);
 
 			// Add bullet
 			for (int i = 0; i < gun.bulletsPerFire; i++) {
 				// Angle to add to bullet due to inaccuracy
-				auto angle = gun.accuracy->get(frame.rng);
+				auto angle = gun.accuracy.get(frame.rng);
 				auto pos = state.player.pos;
 				auto vel = state.player.getForward().rotate(angle) * speed;
 				state.bullets.push_back(Bullet{pos, vel, damage, knockback});
