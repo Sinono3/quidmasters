@@ -10,8 +10,8 @@ struct FrameContext {
 	// In world space
 	Vector2f screenSize;   // Vector (not point)
 	Vector2f screenCenter; // Vector (not point)
-	Vector2f mousePos;
 	Vector2i screenMousePos;
+	Vector2f mousePos;
 	Vector2f cameraPos;
 
 	// Min and max coordinates for game objects

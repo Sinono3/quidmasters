@@ -64,6 +64,7 @@ int main() {
 		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
     	float dt = deltaClock.restart().asSeconds();
 
+
 		FrameContext frame {
 			 // Delta time
 			 .dt = dt,
@@ -73,11 +74,11 @@ int main() {
 			 .screenMousePos = screenMousePos,
 			 .mousePos = mousePos,
 			 .cameraPos = cameraPos,
-			 .rng = rng,
 			 .minX = -screenSize.x,
 			 .minY = -screenSize.y,
 			 .maxX = 2.0f * screenSize.x,
 			 .maxY = 2.0f * screenSize.y,
+			 .rng = rng,
 		};
 
 		window.clear(sf::Color(3, 2, 2));
