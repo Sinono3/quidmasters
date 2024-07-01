@@ -92,8 +92,12 @@ int main() {
 				systems::enemy::collision(state, frame);
 				systems::enemy::death(state, frame, sound);
 
+				// Message system (make msgs disappear after a while)
+				systems::message(state, frame);
 				// Store stuff (hover on item, buy items)
 				systems::store(state, frame);
+				// uuumm ehhh.... tha HACK SYSTEM
+				systems::hacks(state, frame);
 
 				// Update camera pos
 				cameraPos = screenCenter;

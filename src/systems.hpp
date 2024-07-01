@@ -35,7 +35,9 @@ void collision(GameState &state, const FrameContext &frame);
 void death(GameState &state, const FrameContext &frame, GameSound &sound);
 }; // namespace enemy
 
-// Message system
 void message(GameState &state, const FrameContext &frame);
 void store(GameState &state, const FrameContext &frame);
+
+/// WTFFFFFF HAXX????? !!
+void hacks(GameState &state, const FrameContext &frame);
 } // namespace systems

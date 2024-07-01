@@ -20,8 +20,16 @@ enum LoseCondition {
 };
 
 struct Message {
+	enum class Type {
+		Hunger,
+		Store,
+		Evil,
+	};
+
+	Type type;
 	std::string text;
 	float time;
+	constexpr Message(Type type, const std::string_view& text, float time) : text(text), time(time) {}
 };
 
 struct GameState {
@@ -51,10 +59,21 @@ struct GameState {
 
 	// Miscellaneous state
 	std::optional<Message> message;
+	float hungerMsgTimer = 0.0f;
 
 	GameState() {
 		stage = GameStage::Playing;
-		guns = {GUN_SHODDY_PISTOL, GUN_OKAYISH_PISTOL, GUN_RIGHTSIDE_SHOTGUN,
-				GUN_MACHINE_BOY, GUN_EXPLO};
+		guns = {GUN_SHODDY_PISTOL};
+		// guns = {GUN_SHODDY_PISTOL, GUN_OKAYISH_PISTOL, GUN_RIGHTSIDE_SHOTGUN, GUN_MACHINE_BOY, GUN_EXPLO};
+	}
+
+	void setMessage(Message message) {
+		if (this->message.has_value()) {
+			if (message.type == this->message->type) {
+				return;
+			}
+		}
+
+		this->message = message;
 	}
 };

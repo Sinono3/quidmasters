@@ -1,3 +1,4 @@
+#include <sstream>
 #include "../draw.hpp"
 #include "../Store.hpp"
 
@@ -37,9 +38,7 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			buyText.setString("SOLD\nOUT");
 			buyText.setCharacterSize(10);
 			ctx.window.draw(buyText);
-		} 
-
-		if (state.store.hoveredOn.has_value() && state.store.hoveredOn.value() == i) {
+		} else if (state.store.hoveredOn.has_value() && state.store.hoveredOn.value() == i) {
 			sf::RectangleShape shape(
 				sf::Vector2f(Store::ITEM_TILE_SIZE, Store::ITEM_TILE_SIZE));
 			shape.setPosition(x, y);
@@ -73,8 +72,11 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		text.setOutlineThickness(2.0f);
 		ctx.window.draw(text);
 
+		std::stringstream description;
+		description << "Costs " << item.price << " quid. " << item.description;
+
 		text.setPosition(textX, SCREEN_HEIGHT - 40.0f);
-		text.setString(std::string(item.description));
+		text.setString(description.str());
 		text.setFont(ctx.font);
 		text.setCharacterSize(20.0f);
 		ctx.window.draw(text);

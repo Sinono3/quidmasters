@@ -2,6 +2,8 @@
 #include "../systems.hpp"
 #include "../aabb.hpp"
 
+bool lastFrame = false;
+
 void systems::store(GameState &state, const FrameContext& frame) {
 	state.store.hoveredOn.reset();
 	for (int i = 0; i < Store::ITEMS.size(); i++) {
@@ -14,18 +16,25 @@ void systems::store(GameState &state, const FrameContext& frame) {
 		}
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !lastFrame) {
 		if (state.store.hoveredOn.has_value()) {
 			int index = state.store.hoveredOn.value();
 			auto &item = Store::ITEMS[index];
 
-			if (!state.store.bought[index] &&
-				(state.player.coins >= item.price)) {
-				state.store.bought[index] = true;
-				state.player.coins -= item.price;
-				state.guns.push_back(item.gun);
-				std::cout << "Bought item!" << std::endl;
+			if (!state.store.bought[index]) {
+				if (state.player.coins >= item.price) {
+					state.store.bought[index] = true;
+					state.player.coins -= item.price;
+					state.guns.push_back(item.gun);
+					std::cout << "Sold!" << std::endl;
+					state.setMessage(Message(Message::Type::Store, "It's a deal then!", 2.0f));
+				} else {
+					state.setMessage(Message(Message::Type::Store, "you ain't got enough quid bruh!", 2.0f));
+				}
+			} else {
+				state.setMessage(Message(Message::Type::Store, "you already have that", 2.0f));
 			}
 		}
 	}
+	lastFrame = sf::Mouse::isButtonPressed(sf::Mouse::Left);
 }

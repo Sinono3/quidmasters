@@ -44,6 +44,4 @@ void systems::bullets(GameState &state, const FrameContext &frame) {
 			mit++;
 		}
 	}
-
-	std::cout << state.bullets.size() << std::endl;
 }

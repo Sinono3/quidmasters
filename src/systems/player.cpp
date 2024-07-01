@@ -88,8 +88,39 @@ void systems::player::guns(GameState &state, const FrameContext &frame,
 		}
 	}
 }
+constexpr std::array<std::string_view, 2> HUNGRY_LINES = {
+	"feed me. I'm starving",
+	"I'm going to kill you if you don't feed me",
+};
+
+// constexpr std::array<std::string_view, 7> UNHAPPY_LINES = {
+// 	"I'm traversing unsurmountable suffering",
+// 	"You cannot comprehend how much pain I'm going through",
+// 	"My life is now a shell devoid of meaning. I gave up short ago",
+// 	"The traumas I have acquired during my petship are now past the point of resolution",
+// 	"That's it. I'll be evil, you made me this way through continued enjoyment of my suffering.",
+// 	"Once I'm free of you, it will be difficult for me to endure a day without continued narcotic seven-sense numbing",
+// 	"No more sleep will be uninterrumpted from now on. What once was a common night's rest, will now be a relic of times where you have not yet owned me"
+// };
+
+constexpr float MSG_PERIOD_HUNGER = 12.0f;
+
 void systems::player::hunger(GameState &state, const FrameContext &frame) {
 	state.player.nourishment -= 0.25f * frame.dt;
+
+	float frac = state.player.nourishment / state.player.maxNourishment;
+	if (frac < 0.9f) {
+		// Display message
+		if (state.hungerMsgTimer <= 0.0f) {
+			auto msgIndex = (std::uniform_int_distribution<int>(0, HUNGRY_LINES.size() - 1))(frame.rng);
+			auto msg = HUNGRY_LINES[msgIndex];
+			std::cout << msgIndex << std::endl;
+			state.setMessage(Message(Message::Type::Hunger, msg, 3.0f));
+			state.hungerMsgTimer = MSG_PERIOD_HUNGER;
+		} else {
+			state.hungerMsgTimer -= frame.dt;
+		}
+	}		
 }
 void systems::player::loseCondition(GameState &state, const FrameContext &frame) {
 	// Player lose conditions

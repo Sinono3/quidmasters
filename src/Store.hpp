@@ -17,7 +17,7 @@ struct Store {
 		Store::Item {
 			"Okay-ish handgun", 
 			50,
-			"It works for now, but you're defintely get a better one soon",
+			"It works for now",
 			GUN_OKAYISH_PISTOL
 		},
 		Store::Item {

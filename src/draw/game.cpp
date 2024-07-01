@@ -160,4 +160,21 @@ void draw::game(const GameState &state, FrameContext &frame,
 
 	// Show store items
 	draw::store(state, ctx);
+
+	// Show current pet message
+	if (state.message.has_value()) {
+		sf::Text text;
+		text.setFont(ctx.font);
+		text.setString((*state.message).text);
+		text.setFillColor(sf::Color::Cyan);
+
+		float width = text.getLocalBounds().getSize().x;
+
+		sf::RenderStates st;
+		sf::Transform t;
+		float fact = 0.01f * std::sin(ctx.time * 20.0f);
+		st.transform = t.translate(SCREEN_WIDTH - width - 150.0f, 60.0f)
+						   .scale(1.0f + fact, 1.0f + fact);
+		ctx.window.draw(text, st);
+	}
 }
