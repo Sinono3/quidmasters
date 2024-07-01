@@ -8,7 +8,7 @@ void getWaveEnemyClasses(EnemyClassCounter& enemyClassCount, int wave) {
 	enemyClassCount[1] = std::max(0, wave / 2);
 }
 
-void waves(GameState &state, const FrameContext &frame) {
+void systems::waves(GameState &state, const FrameContext &frame) {
 	if (!state.inBreak) {
 		// Count of enemies that are spawned in this wave
 		int totalEnemyCount = 0;

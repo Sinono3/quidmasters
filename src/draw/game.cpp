@@ -159,6 +159,5 @@ void draw::game(const GameState &state, FrameContext &frame,
 	}
 
 	// Show store items
-	Store store;
-	store.render(ctx.window, ctx.font);
+	draw::store(state, ctx);
 }

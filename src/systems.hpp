@@ -3,7 +3,6 @@
 #include "GameState.hpp"
 #include <random>
 
-
 struct FrameContext {
 	// Delta time
 	float dt;
@@ -12,12 +11,14 @@ struct FrameContext {
 	Vector2f screenSize;   // Vector (not point)
 	Vector2f screenCenter; // Vector (not point)
 	Vector2f mousePos;
+	Vector2i screenMousePos;
 	Vector2f cameraPos;
 
 	// Random
 	std::default_random_engine &rng;
 };
 
+namespace systems {
 namespace player {
 void movement(GameState &state, const FrameContext &frame);
 void guns(GameState &state, const FrameContext &frame, GameSound &sound);
@@ -36,3 +37,5 @@ void death(GameState &state, const FrameContext &frame, GameSound &sound);
 
 // Message system
 void message(GameState &state, const FrameContext &frame);
+void store(GameState &state, const FrameContext &frame);
+} // namespace systems

@@ -1,7 +1,7 @@
 #include <SFML/System.hpp>
 #include "../systems.hpp"
 
-void player::movement(GameState &state, const FrameContext &frame) {
+void systems::player::movement(GameState &state, const FrameContext &frame) {
 	Vector2f wasd;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
 		wasd.y = -1.0;
@@ -25,9 +25,13 @@ void player::movement(GameState &state, const FrameContext &frame) {
 	state.player.angle = atan2(playerToMouse.y, playerToMouse.x);
 }
 
-void player::guns(GameState &state, const FrameContext &frame,
+void systems::player::guns(GameState &state, const FrameContext &frame,
 				  GameSound &sound) {
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+	// Right now we can only over items on the store, this may change later.
+	bool hoveringOverSomething = state.store.hoveredOn.has_value();
+
+	// Check if the mouse button was pressed and we are not hovering over anything
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !hoveringOverSomething) {
 		if (state.gunCooldown.getElapsedTime().asSeconds() > state.gunCooldownTime) {
 			state.gunCooldown.restart();
 
@@ -49,13 +53,13 @@ void player::guns(GameState &state, const FrameContext &frame,
 
 			// Play sound effect
 			switch (gun.type) {
-			case Handgun:
+			case Gun::Type::Handgun:
 				sound.handgun.play();
 				break;
-			case Shotgun:
+			case Gun::Type::Shotgun:
 				sound.shotgun.play();
 				break;
-			case MachineGun:
+			case Gun::Type::MachineGun:
 				sound.machineGun.play();
 				break;
 			}
@@ -63,21 +67,31 @@ void player::guns(GameState &state, const FrameContext &frame,
 	}
 
 	// Gun switching
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-		state.currentGun = 0;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
-		state.currentGun = 1;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
-		state.currentGun = 2;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
-		state.currentGun = 3;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
-		state.currentGun = 4;
+	std::optional<int> switchTo;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) switchTo = 0;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) switchTo = 1;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) switchTo = 2;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) switchTo = 3;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) switchTo = 4;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) switchTo = 5;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) switchTo = 6;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) switchTo = 7;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) switchTo = 8;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)) switchTo = 9;
+
+	if (switchTo.has_value()) {
+		// Check if we have the gun we want to switch to
+		if ((*switchTo >= 0) && (*switchTo < state.guns.size())) {
+			// We will switch our gun
+			state.currentGun = *switchTo;
+		}
+	}
 }
-void player::hunger(GameState &state, const FrameContext &frame) {
+void systems::player::hunger(GameState &state, const FrameContext &frame) {
 	state.player.nourishment -= 0.25f * frame.dt;
 }
-void player::loseCondition(GameState &state, const FrameContext &frame) {
+void systems::player::loseCondition(GameState &state, const FrameContext &frame) {
 	// Player lose conditions
 	if (state.player.health <= 0.0f) {
 		state.stage = Lost;

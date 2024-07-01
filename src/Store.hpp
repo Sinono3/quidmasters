@@ -1,23 +1,39 @@
 #pragma once
-#include "GameState.hpp"
+#include "Gun.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-class Store {
-  public:
+struct Store {
 	struct Item {
-		std::string name;
+		std::string_view name;
 		int price;
-		std::string description;
-		// std::function<void()> func;
+		std::string_view description;
 		Gun gun;
 	};
 
-	Store();
-	void update(sf::RenderWindow &window, GameState &state);
-	void render(sf::RenderWindow &window, const sf::Font &font);
+	static constexpr float ITEM_TILE_SIZE = 40.0f;
+	static constexpr float SLACK = 10.0f;
+	static constexpr std::array<Item, 3> ITEMS{{
+		Store::Item {
+			"Okay-ish handgun", 
+			50,
+			"It works for now, but you're defintely get a better one soon",
+			GUN_OKAYISH_PISTOL
+		},
+		Store::Item {
+			"Rightside boye", 
+			200,
+			"Shoots to the right, but shoots a lotta",
+			GUN_RIGHTSIDE_SHOTGUN
+		},
+		Store::Item {
+			"Machine Boy",
+			 1000,
+			 "Yeahhhh",
+			 GUN_MACHINE_BOY
+		},
+	}};
 
-  private:
-	std::vector<Item> items;
+	std::array<bool, ITEMS.size()> bought = { false };
 	std::optional<int> hoveredOn;
 };

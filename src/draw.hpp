@@ -15,4 +15,5 @@ void gameOver(const GameState &state, DrawContext &context);
 void statusbar(DrawContext &ctx, const char *label, float var, float max,
 			   float x, float y, float maxWidth, float height, sf::Color fill,
 			   sf::Color bg);
+void store(const GameState &state, DrawContext &context);
 } // namespace draw

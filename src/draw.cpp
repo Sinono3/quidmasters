@@ -35,5 +35,4 @@ void draw::gameOver(const GameState& state, DrawContext& context) {
 	window.clear(sf::Color(12, 2, 2));
 	window.draw(title);
 	window.draw(subtitle);
-	window.display();
 }

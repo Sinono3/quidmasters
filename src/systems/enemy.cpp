@@ -2,7 +2,7 @@
 #include "../Constants.hpp"
 #include "../aabb.hpp"
 
-void enemy::ai(GameState &state, const FrameContext &frame) {
+void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 	for (auto &enemy : state.enemies) {
 		// Movement
 		Vector2f targetVel =
@@ -25,7 +25,7 @@ void enemy::ai(GameState &state, const FrameContext &frame) {
 		}
 	}
 }
-void enemy::collision(GameState &state, const FrameContext &frame) {
+void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 	// Enemy collision
 	for (int i = 0; i < state.enemies.size(); i++) {
 		auto &a = state.enemies[i];
@@ -45,7 +45,7 @@ void enemy::collision(GameState &state, const FrameContext &frame) {
 		}
 	}
 }
-void enemy::death(GameState &state, const FrameContext &frame,
+void systems::enemy::death(GameState &state, const FrameContext &frame,
 				  GameSound &sound) {
 	// enemy health and death
 	for (std::vector<Enemy>::iterator mit = state.enemies.begin();

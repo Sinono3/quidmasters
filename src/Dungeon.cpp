@@ -58,8 +58,8 @@ int main() {
         	.time = time.getElapsedTime().asSeconds(),
         };
 
-		Vector2f screenMousePos = Vector2i(sf::Mouse::getPosition(window)).to<float>();
-		Vector2f mousePos = (screenMousePos * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
+		Vector2i screenMousePos = Vector2i(sf::Mouse::getPosition(window));
+		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
     	float dt = deltaClock.restart().asSeconds();
 
 		FrameContext frame {
@@ -68,32 +68,32 @@ int main() {
 			 // In world space
 			 .screenSize = screenSize, // Vector (not point)
 			 .screenCenter = screenCenter, // Vector (not point)
+			 .screenMousePos = screenMousePos,
 			 .mousePos = mousePos,
 			 .cameraPos = cameraPos,
 			 .rng = rng
 		};
 
-		Store store;
 		window.clear(sf::Color(3, 2, 2));
         switch (state.stage) {
         	case GameStage::Playing:
-				player::movement(state, frame);
-				player::guns(state, frame, sound);
-				player::hunger(state, frame);
-				player::loseCondition(state, frame);
+				systems::player::movement(state, frame);
+				systems::player::guns(state, frame, sound);
+				systems::player::hunger(state, frame);
+				systems::player::loseCondition(state, frame);
 
 				// Bullets
-				bullets(state, frame);
+				systems::bullets(state, frame);
 				// Wave system and enemy spawning
-				waves(state, frame);
+				systems::waves(state, frame);
 
 				// Enemy systems
-				enemy::ai(state, frame);
-				enemy::collision(state, frame);
-				enemy::death(state, frame, sound);
+				systems::enemy::ai(state, frame);
+				systems::enemy::collision(state, frame);
+				systems::enemy::death(state, frame, sound);
 
 				// Store stuff (hover on item, buy items)
-				store.update(window, state);
+				systems::store(state, frame);
 
 				// Update camera pos
 				cameraPos = screenCenter;

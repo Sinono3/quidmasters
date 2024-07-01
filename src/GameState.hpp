@@ -4,6 +4,7 @@
 #include "Enemy.hpp"
 #include "Gun.hpp"
 #include "Player.hpp"
+#include "Store.hpp"
 #include <string>
 #include <vector>
 
@@ -37,6 +38,9 @@ struct GameState {
 	sf::Clock gunCooldown;
 	float gunCooldownTime = 0.0f;
 
+	// Store state
+	Store store;
+
 	// Wave stuff
 	EnemyClassCounter enemyClassCount;
 	EnemyClassCounter spawnedEnemyClassCount;
@@ -44,6 +48,8 @@ struct GameState {
 	int wave = 0;
 	bool inBreak = true;
 	float breakTime = 1.0f;
+
+	// Miscellaneous state
 	std::optional<Message> message;
 
 	GameState() {
