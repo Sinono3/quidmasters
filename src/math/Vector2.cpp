@@ -1,3 +1,4 @@
+#include <cmath>
 #include <algorithm>
 template<typename T>
 Vector2<T>::Vector2() : x(0), y(0) {}
@@ -20,8 +21,8 @@ template<typename T>
 Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }
 
 template <typename T> Vector2<T> Vector2<T>::rotate(float angle) const {
-	return Vector2f(x * cos(angle) - y * sin(angle),
-					x * sin(angle) + y * cos(angle));
+	return Vector2f(x * std::cos(angle) - y * std::sin(angle),
+					x * std::sin(angle) + y * std::cos(angle));
 }
 
 template <typename T> Vector2<T> Vector2<T>::clamp(float minX, float minY, float maxX, float maxY) const {

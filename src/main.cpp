@@ -26,6 +26,7 @@
 std::default_random_engine rng;
 
 int main() {
+	rng = std::default_random_engine();
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
 	sf::Font font;
