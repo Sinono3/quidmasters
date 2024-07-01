@@ -33,6 +33,8 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 			return;
 		}
 
+		float spawnRadius = 1.2f * frame.screenCenter.norm();
+
 		// Spawn enemies
 		state.enemySpawnTime -= frame.dt;
 		if (state.enemySpawnTime <= 0.0f) {
@@ -42,14 +44,11 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 				if (state.spawnedEnemyClassCount[cls_idx] < state.enemyClassCount[cls_idx]) {
 					EnemyClass enemyClass = ENEMY_CLASSES[cls_idx];
 					Enemy newEnemy = enemyClass.produce();
-					newEnemy.pos.x = std::uniform_real_distribution<float>(
-						frame.screenSize.x, frame.screenSize.x + 3.0f)(frame.rng);
-					newEnemy.pos.y = std::uniform_real_distribution<float>(
-						0.0f, frame.screenSize.y)(frame.rng);
+					float angle = std::uniform_real_distribution<float>(0.0f, 6.28f)(frame.rng);
+					newEnemy.pos = frame.screenCenter + Vector2f(spawnRadius, 0.0f).rotate(angle);
 
 					state.enemies.push_back(newEnemy);
 					state.spawnedEnemyClassCount[cls_idx]++;				
-				} else {
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 #include <SFML/System.hpp>
+#include "../aabb.hpp"
 #include "../systems.hpp"
+#include <optional>
 
 void systems::player::movement(GameState &state, const FrameContext &frame) {
 	Vector2f wasd;
@@ -103,18 +105,20 @@ constexpr std::array<std::string_view, 2> HUNGRY_LINES = {
 // 	"No more sleep will be uninterrumpted from now on. What once was a common night's rest, will now be a relic of times where you have not yet owned me"
 // };
 
+constexpr float HUNGER_RATE = 0.25f;
+// What fraction of hunger do we need to go below of to make the pet speak
+constexpr float MSG_HUNGER_THRESHOLD = 0.4f;
 constexpr float MSG_PERIOD_HUNGER = 12.0f;
 
 void systems::player::hunger(GameState &state, const FrameContext &frame) {
-	state.player.nourishment -= 0.25f * frame.dt;
+	state.player.nourishment -= HUNGER_RATE * frame.dt;
 
 	float frac = state.player.nourishment / state.player.maxNourishment;
-	if (frac < 0.9f) {
+	if (frac < MSG_HUNGER_THRESHOLD) {
 		// Display message
 		if (state.hungerMsgTimer <= 0.0f) {
 			auto msgIndex = (std::uniform_int_distribution<int>(0, HUNGRY_LINES.size() - 1))(frame.rng);
 			auto msg = HUNGRY_LINES[msgIndex];
-			std::cout << msgIndex << std::endl;
 			state.setMessage(Message(Message::Type::Hunger, msg, 3.0f));
 			state.hungerMsgTimer = MSG_PERIOD_HUNGER;
 		} else {
@@ -138,5 +142,24 @@ void systems::player::loseCondition(GameState &state, const FrameContext &frame)
 		state.stage = Lost;
 		state.lostBecause = DueToFog;
 		return;
+	}
+}
+
+void systems::player::quidPickup(GameState &state, const FrameContext &frame, GameSound& sound) {
+	for (std::vector<QuidDrop>::iterator mit = state.quidDrops.begin();
+		 mit != state.quidDrops.end();) {
+		auto &quid = *mit;
+
+		if (aabb(quid.pos.x, quid.pos.y, 0.1f, 0.1f,
+				 state.player.pos.x - RADIUS, state.player.pos.y - RADIUS,
+				 RADIUS * 2.0f, RADIUS * 2.0f)) {
+			state.player.coins += quid.quid;
+			sound.coins.play();
+
+			// Delete quid drops
+			mit = state.quidDrops.erase(mit);
+		} else {
+			mit++;
+		}
 	}
 }

@@ -49,6 +49,16 @@ void draw::game(const GameState &state, FrameContext &frame,
 		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
 	}
 
+	// Draw quid drops
+	for (auto &quid : state.quidDrops) {
+		auto radius = quid.quid / 10.0f;
+		auto inset = Vector2f(-radius, radius);
+		sf::CircleShape circle(radius, 20);
+		circle.setFillColor(sf::Color::Yellow);
+		circle.setPosition((quid.pos + inset).toSFML());
+		ctx.window.draw(circle, worldRenderState);
+	}
+
 	// Fog fog;
 	// fog.notoriety = (state.player.pos - screenCenter).norm() / 2000.0f;
 	// fog.draw(window, font, time.getElapsedTime().asSeconds());
@@ -144,12 +154,11 @@ void draw::game(const GameState &state, FrameContext &frame,
 			for (int i = 0; i < ENEMY_CLASS_COUNT; i++)
 				totalEnemyCount += state.enemyClassCount[i];
 
-			ss << "Wave: ";
-			ss << state.wave;
-			draw::statusbar(ctx, ss.str().c_str(),
-						  (float)remainingEnemyCount, (float)totalEnemyCount,
-						  670, 540, 100, 60, sf::Color::Green,
-						  sf::Color::Magenta);
+			ss << "Wave: " << state.wave << '\n'
+			   << "Enemies left: " << remainingEnemyCount;
+			draw::statusbar(ctx, ss.str().c_str(), (float)remainingEnemyCount,
+							(float)totalEnemyCount, 640, 540, 100, 60,
+							sf::Color::Green, sf::Color::Magenta);
 		} else {
 			ss << "breaktime";
 			draw::statusbar(ctx, ss.str().c_str(), state.breakTime,

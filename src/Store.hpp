@@ -2,6 +2,7 @@
 #include "Gun.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <optional>
 
 struct Store {
 	struct Item {
@@ -13,7 +14,7 @@ struct Store {
 
 	static constexpr float ITEM_TILE_SIZE = 40.0f;
 	static constexpr float SLACK = 10.0f;
-	static constexpr std::array<Item, 3> ITEMS{{
+	static constexpr std::array<Item, 4> ITEMS{{
 		Store::Item {
 			"Okay-ish handgun", 
 			50,
@@ -31,6 +32,12 @@ struct Store {
 			 1000,
 			 "Yeahhhh",
 			 GUN_MACHINE_BOY
+		},
+		Store::Item {
+			"EXPLD151",
+			 3000,
+			 "explode the world",
+			 GUN_EXPLD
 		},
 	}};
 

@@ -5,8 +5,10 @@
 #include "Gun.hpp"
 #include "Player.hpp"
 #include "Store.hpp"
+#include "QuidDrop.hpp"
 #include <string>
 #include <vector>
+#include <optional>
 
 enum GameStage {
 	Playing,
@@ -37,10 +39,13 @@ struct GameState {
 	GameStage stage;
 	LoseCondition lostBecause;
 
-	// Actual game stuff
+	// Entities
 	Player player;
 	std::vector<Enemy> enemies;
 	std::vector<Bullet> bullets;
+	std::vector<QuidDrop> quidDrops;
+
+	// Gun stuff
 	std::vector<Gun> guns;
 	int currentGun = 0;
 	sf::Clock gunCooldown;
@@ -60,6 +65,9 @@ struct GameState {
 	// Miscellaneous state
 	std::optional<Message> message;
 	float hungerMsgTimer = 0.0f;
+
+	// HAX heheeheheh
+	bool hacksON = false;
 
 	GameState() {
 		stage = GameStage::Playing;

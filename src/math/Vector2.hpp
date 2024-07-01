@@ -16,6 +16,7 @@ struct Vector2 {
 	T norm() const;
 	Vector2 normalized() const;
 	Vector2 rotate(float angle) const;
+	Vector2 clamp(float minX, float minY, float maxX, float maxY) const;
 	
 	// Operators
 	Vector2 operator+(const Vector2 &other) const;

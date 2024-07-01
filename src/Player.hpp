@@ -17,15 +17,15 @@ struct Player {
 
     Vector2f transformVector(const Vector2f& vector) const {
     	return Vector2f(
-	    	vector.x * cos(angle) - vector.y * sin(angle),
-	    	vector.x * sin(angle) + vector.y * cos(angle)
+	    	vector.x * std::cos(angle) - vector.y * std::sin(angle),
+	    	vector.x * std::sin(angle) + vector.y * std::cos(angle)
 	    );
     }
 
 	Vector2f inverseTransformVector(const Vector2f& vector) const {
 		return Vector2f(
-			vector.x * cos(angle) + vector.y * sin(angle),
-			-vector.x * sin(angle) + vector.y * cos(angle)
+			vector.x * std::cos(angle) + vector.y * std::sin(angle),
+			-vector.x * std::sin(angle) + vector.y * std::cos(angle)
 		);
 	}
 };

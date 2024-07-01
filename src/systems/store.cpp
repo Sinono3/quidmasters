@@ -26,7 +26,6 @@ void systems::store(GameState &state, const FrameContext& frame) {
 					state.store.bought[index] = true;
 					state.player.coins -= item.price;
 					state.guns.push_back(item.gun);
-					std::cout << "Sold!" << std::endl;
 					state.setMessage(Message(Message::Type::Store, "It's a deal then!", 2.0f));
 				} else {
 					state.setMessage(Message(Message::Type::Store, "you ain't got enough quid bruh!", 2.0f));

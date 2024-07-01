@@ -3,7 +3,7 @@
 #include <iostream>
 
 struct GameSound {
-	sf::SoundBuffer machineGunBuffer, handgunBuffer, shotgunBuffer, cashBuffer;
-	sf::Sound machineGun, handgun, shotgun, cash;
+	sf::SoundBuffer machineGunBuffer, handgunBuffer, shotgunBuffer, cashBuffer, hitBuffer, coinsBuffer;
+	sf::Sound machineGun, handgun, shotgun, cash, hit, coins;
 	GameSound();
 };

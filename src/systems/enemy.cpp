@@ -26,7 +26,6 @@ void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 	}
 }
 void systems::enemy::collision(GameState &state, const FrameContext &frame) {
-	// Enemy collision
 	for (int i = 0; i < state.enemies.size(); i++) {
 		auto &a = state.enemies[i];
 
@@ -43,6 +42,9 @@ void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 				a.vel = a.vel + awayFromB * 0.5f;
 			}
 		}
+
+		// Limit coordinates to game world
+		a.pos = a.pos.clamp(frame.minX, frame.minY, frame.maxX, frame.maxY);
 	}
 }
 void systems::enemy::death(GameState &state, const FrameContext &frame,
@@ -52,19 +54,17 @@ void systems::enemy::death(GameState &state, const FrameContext &frame,
 		 mit != state.enemies.end();) {
 		auto &enemy = *mit;
 		if (enemy.health <= 0.0f) {
-			// Add coins and nourishment
-			// TODO: Constant??
-			auto coinsAdd = std::uniform_int_distribution(1, 6)(frame.rng);
+			// Nourish the pet
 			auto nourishAdd = std::uniform_real_distribution(0.0f, 5.0f)(frame.rng);
 			state.player.nourishment =
 				std::max(std::min(state.player.nourishment + nourishAdd,
 								  state.player.maxNourishment),
 						 0.0f);
-			state.player.coins += coinsAdd;
 
-			// Play cash effect
-			sound.cash.setVolume(100.0f);
-			sound.cash.play();
+
+			// Add a quid drop
+			auto quidDrop = std::uniform_int_distribution(1, 6)(frame.rng);
+			state.quidDrops.push_back(QuidDrop { enemy.pos, quidDrop });
 
 			// Delete enemy
 			mit = state.enemies.erase(mit);

@@ -44,6 +44,7 @@ int main() {
 	Vector2f screenSize (SCREEN_WIDTH / TILE_SIZE, SCREEN_HEIGHT / TILE_SIZE);
 	Vector2f screenCenter = screenSize * (1.0f / 2.0f);
 	state.player.pos = screenCenter;
+	state.wave = 100;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -71,7 +72,11 @@ int main() {
 			 .screenMousePos = screenMousePos,
 			 .mousePos = mousePos,
 			 .cameraPos = cameraPos,
-			 .rng = rng
+			 .rng = rng,
+			 .minX = -screenSize.x,
+			 .minY = -screenSize.y,
+			 .maxX = 2.0f * screenSize.x,
+			 .maxY = 2.0f * screenSize.y,
 		};
 
 		window.clear(sf::Color(3, 2, 2));
@@ -81,9 +86,10 @@ int main() {
 				systems::player::guns(state, frame, sound);
 				systems::player::hunger(state, frame);
 				systems::player::loseCondition(state, frame);
+				systems::player::quidPickup(state, frame, sound);
 
 				// Bullets
-				systems::bullets(state, frame);
+				systems::bullets(state, frame, sound);
 				// Wave system and enemy spawning
 				systems::waves(state, frame);
 
