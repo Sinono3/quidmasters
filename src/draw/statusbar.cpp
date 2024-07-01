@@ -24,14 +24,14 @@ void draw::statusbar(DrawContext& ctx,
 	text.setCharacterSize(20);
 	text.setFillColor(sf::Color::Black);
 
-	if (fraction >= 0.0 && fraction < 0.1) fraction = 0.1;
-	if (fraction <= 0.0 && fraction > -0.1) fraction = -0.1;
+	if (fraction >= 0.0 && fraction < 0.1) fraction = 0.3;
+	if (fraction <= 0.0 && fraction > -0.1) fraction = -0.3;
 	sf::Color outlineColor = sf::Color(
 	                                   (fill.r * fraction + bg.r  + (1.0f - fraction)* (1.0f - fraction)), 
 	                                   (fill.g * fraction + bg.g  + (1.0f - fraction)* (1.0f - fraction)), 
 	                                   (fill.b * fraction + bg.b  + (1.0f - fraction)* (1.0f - fraction))
 	                               );
-	float thickness = 0.2 + (1.0 / fraction) * 1.0;
+	float thickness = 0.2 + (1.0 / fraction);
 
 	text.setOutlineColor(outlineColor);
 	text.setOutlineThickness(thickness);
