@@ -1,5 +1,6 @@
 # SRC = src/main.cpp src/Face.cpp
-SRC = src/Dungeon.cpp src/draw.cpp src/Face.cpp src/Store.cpp src/aabb.cpp src/Fog.cpp src/GameSound.cpp src/systems/player.cpp src/systems/waves.cpp src/systems/bullets.cpp src/systems/enemy.cpp
+SRC = src/Dungeon.cpp src/draw.cpp src/Face.cpp src/aabb.cpp src/Fog.cpp src/GameSound.cpp src/systems/player.cpp src/systems/waves.cpp src/systems/bullets.cpp src/systems/enemy.cpp src/systems/store.cpp src/draw/game.cpp src/draw/statusbar.cpp src/draw/store.cpp
+DEPENDS := $(wildcard *.hpp)
 BUILDDIR = build
 EXE = build/pou
 
@@ -15,11 +16,13 @@ OBJS = $(SRC:%=$(BUILDDIR)/%.o)
 all: $(EXE)
 run: $(EXE)
 	$(EXE)
+rebuild: clean $(EXE)
+rebuild-run: clean run
 clean:
 	rm -rf $(BUILDDIR)
 .PHONY: all run clean
 
-$(BUILDDIR)/%.cpp.o: %.cpp
+$(BUILDDIR)/%.cpp.o: %.cpp $(DEPENDS)
 	mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
