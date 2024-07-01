@@ -5,10 +5,10 @@ EXE = build/pou
 
 CXX = g++
 GCC = gcc
-CXXFLAGS = -Wall -I/opt/homebrew/include/
+CXXFLAGS = -Wall -Wextra -I/opt/homebrew/include/
 CFLAGS =
 CPPFLAGS = --std=c++20 
-LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -framework OpenGL
+LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 OBJS = $(SRC:%=$(BUILDDIR)/%.o)
 
