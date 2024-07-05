@@ -21,6 +21,7 @@ namespace player {
 void movement(GameState &state, const FrameContext &frame);
 void guns(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 void hunger(GameState &state, const FrameContext &frame);
+void fog(GameState &state, const FrameContext &frame);
 void loseCondition(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 void quidPickup(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 void warnings(GameState &state, const FrameContext &frame, Assets::Sound& sound);
@@ -40,6 +41,7 @@ void death(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 
 void message(GameState &state, const FrameContext &frame);
 void store(GameState &state, const FrameContext &frame);
+void music(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 
 /// WTFFFFFF HAXX????? !!
 void hacks(GameState &state, const FrameContext &frame);

@@ -87,6 +87,7 @@ int main() {
 				systems::player::movement(state, frame);
 				systems::player::guns(state, frame, assets.sound);
 				systems::player::hunger(state, frame);
+				systems::player::fog(state, frame);
 				systems::player::loseCondition(state, frame, assets.sound);
 				systems::player::quidPickup(state, frame, assets.sound);
 				systems::player::warnings(state, frame, assets.sound);
@@ -109,6 +110,8 @@ int main() {
 				systems::message(state, frame);
 				// Store stuff (hover on item, buy items)
 				systems::store(state, frame);
+				// Play music
+				systems::music(state, frame, assets.sound);
 				// uuumm ehhh.... tha HACK SYSTEM
 				systems::hacks(state, frame);
         		break;
@@ -143,7 +146,8 @@ int main() {
     		case GameStage::Lost:
 	        	// Restart with enter
 	        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-	        	    startGame();
+	        	    state = GameState();
+	        	    state.stage = GameStage::Playing;
 	        	}
     			break;
     	}

@@ -12,7 +12,7 @@ Assets::Sound::Sound() {
 		|| !heartbeat.openFromFile("sfx/heartbeat.mp3")
 		|| !music_Phase1.openFromFile("music/clapmusic.mp3")
 		|| !music_Phase2.openFromFile("music/1234_lasmanos.mp3")
-		// || music_Phase3.openFromFile("music/desert3.mp3")
+		|| !music_Phase3.openFromFile("music/desert3.mp3")
 	) {
 		std::cerr << "Error while loading sound assets" << std::endl;
 		exit(1);
@@ -21,7 +21,7 @@ Assets::Sound::Sound() {
 	machineGun.setBuffer(machineGunBuffer);
 	machineGun.setVolume(50.0f);
 	shotgun.setBuffer(shotgunBuffer);
-	shotgun.setVolume(50.0f);
+	shotgun.setVolume(30.0f);
 	handgun.setBuffer(handgunBuffer);
 	handgun.setVolume(50.0f);
 	cash.setBuffer(cashBuffer);
@@ -33,6 +33,9 @@ Assets::Sound::Sound() {
 
 	heartbeat.setLoop(true);
 	music_Phase1.setLoop(true);
+	music_Phase1.setVolume(0.0f);
 	music_Phase2.setLoop(true);
+	music_Phase2.setVolume(0.0f);
 	music_Phase3.setLoop(true);
+	music_Phase3.setVolume(0.0f);
 }

@@ -11,6 +11,7 @@ SRC = src/main.cpp\
 	src/systems/bullets.cpp\
 	src/systems/message.cpp\
 	src/systems/waves.cpp\
+	src/systems/music.cpp\
 	src/draw/fog.cpp\
 	src/draw/face.cpp\
 	src/draw/game.cpp\

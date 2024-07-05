@@ -136,6 +136,18 @@ void systems::player::hunger(GameState &state, const FrameContext &frame) {
 		}
 	}		
 }
+
+constexpr float INSANITY_RATE = 1.25f;
+
+void systems::player::fog(GameState &state, const FrameContext &frame) {
+	float distFromCenter = (state.player.pos - GameDef::GAME_CENTER).norm() / 25.0f;
+
+	// If the player strays too far from the playing-area he loses sanity
+	if (!aabb(state.player.pos.x, state.player.pos.y, 0.0f, 0.0f, 0.0f, 0.0f, GameDef::GAME_WIDTH, GameDef::GAME_HEIGHT)) {
+		state.player.sanity -= INSANITY_RATE * distFromCenter * frame.dt;
+	}
+}
+
 void systems::player::loseCondition(GameState &state, const FrameContext &frame, Assets::Sound& sound) {
 	bool lost = false;
 

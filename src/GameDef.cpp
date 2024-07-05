@@ -24,25 +24,67 @@ const float Player::RADIUS_SQ = Player::RADIUS * Player::RADIUS;
 const float GameDef::WAVE_TIME = 30.0f;
 const float GameDef::BREAK_TIME = 10.0f;
 
-const Gun GUN_SHODDY_PISTOL = { .type = Gun::Type::Handgun, .firePeriod = UniVar(0.7f, 1.6f),
-	.damage = UniVar(3.9f, 4.1f), .knockback = UniVar(0.0f, 0.2f), .bulletSpeed = UniVar(50.0f, 100.0f),
-	.accuracy = UniVar(-0.2f, 0.2f), .bulletsPerFire = 1, };
-const Gun GUN_OKAYISH_PISTOL = { .type = Gun::Type::Handgun, .firePeriod = UniVar(0.2f, 0.7f),
-	.damage = UniVar(3.9f, 4.1f), .knockback = UniVar(0.0f, 0.2f), .bulletSpeed = UniVar(80.0f, 100.0f),
-	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 1, };
-const Gun GUN_RIGHTSIDE_SHOTGUN = { .type = Gun::Type::Shotgun, .firePeriod = UniVar(0.7f, 1.0f),
-	.damage = UniVar(4.9f, 6.1f), .knockback = UniVar(0.0f, 0.4f), .bulletSpeed = UniVar(200.0f, 300.0f),
-	.accuracy = UniVar(-0.02f, 1.0f), .bulletsPerFire = 5, };
-const Gun GUN_MACHINE_BOY = { .type = Gun::Type::MachineGun, .firePeriod = UniVar(0.08f, 0.1f),
-	.damage = UniVar(1.0f, 1.8f), .knockback = UniVar(0.0f, 0.15f), .bulletSpeed = UniVar(100.0f, 200.0f),
-	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 2, };
-const Gun GUN_GRAVKILLER = { .type = Gun::Type::Homing, .firePeriod = UniVar(0.2f, 0.4f),
-	.damage = UniVar(1.0f, 1.8f), .knockback = UniVar(0.0f, 0.15f), .bulletSpeed = UniVar(10.0f, 20.0f),
-	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 4, };
-const Gun GUN_EXPLD = { .type = Gun::Type::Shotgun, .firePeriod = UniVar(8.08f, 12.1f),
-	.damage = UniVar(5.0f, 4.8f), .knockback = UniVar(0.7f, 0.9f), .bulletSpeed = UniVar(100.0f, 200.0f),
-	.accuracy = UniVar(-3.14f, 3.14f), .bulletsPerFire = 4000, };
-const std::vector<Gun> GameDef::INITIAL_GUNS{{ GUN_SHODDY_PISTOL }};
+const Gun GUN_SHODDY_PISTOL = {
+	.type = Gun::Type::Handgun,
+	.icon = Gun::Icon::Pistol,
+	.firePeriod = UniVar(0.7f, 1.6f),
+	.damage = UniVar(3.9f, 4.1f),
+	.knockback = UniVar(0.0f, 0.2f),
+	.bulletSpeed = UniVar(50.0f, 100.0f),
+	.accuracy = UniVar(-0.2f, 0.2f),
+	.bulletsPerFire = 1,
+};
+const Gun GUN_OKAYISH_PISTOL = {
+	.type = Gun::Type::Handgun,
+	.icon = Gun::Icon::Revolver,
+	.firePeriod = UniVar(0.2f, 0.7f),
+	.damage = UniVar(3.9f, 4.1f),
+	.knockback = UniVar(0.0f, 0.2f),
+	.bulletSpeed = UniVar(80.0f, 100.0f),
+	.accuracy = UniVar(-0.02f, 0.02f),
+	.bulletsPerFire = 1,
+};
+const Gun GUN_RIGHTSIDE_SHOTGUN = {
+	.type = Gun::Type::Shotgun,
+	.icon = Gun::Icon::Shotgun,
+	.firePeriod = UniVar(0.7f, 1.0f),
+	.damage = UniVar(4.9f, 6.1f),
+	.knockback = UniVar(0.0f, 0.4f),
+	.bulletSpeed = UniVar(200.0f, 300.0f),
+	.accuracy = UniVar(-0.02f, 1.0f),
+	.bulletsPerFire = 5,
+};
+const Gun GUN_MACHINE_BOY = {
+	.type = Gun::Type::MachineGun,
+	.icon = Gun::Icon::MachineGun,
+	.firePeriod = UniVar(0.08f, 0.1f),
+	.damage = UniVar(1.0f, 1.8f),
+	.knockback = UniVar(0.0f, 0.15f),
+	.bulletSpeed = UniVar(100.0f, 200.0f),
+	.accuracy = UniVar(-0.02f, 0.02f),
+	.bulletsPerFire = 2,
+};
+const Gun GUN_GRAVKILLER = {
+	.type = Gun::Type::Homing,
+	.icon = Gun::Icon::Bazooka,
+	.firePeriod = UniVar(0.2f, 0.4f),
+	.damage = UniVar(1.0f, 1.8f),
+	.knockback = UniVar(0.0f, 0.15f),
+	.bulletSpeed = UniVar(10.0f, 20.0f),
+	.accuracy = UniVar(-0.02f, 0.02f),
+	.bulletsPerFire = 4,
+};
+const Gun GUN_EXPLD = {
+	.type = Gun::Type::Shotgun,
+	.icon = Gun::Icon::Grenade,
+	.firePeriod = UniVar(8.08f, 12.1f),
+	.damage = UniVar(5.0f, 4.8f),
+	.knockback = UniVar(0.7f, 0.9f),
+	.bulletSpeed = UniVar(100.0f, 200.0f),
+	.accuracy = UniVar(-3.14f, 3.14f),
+	.bulletsPerFire = 4000,
+};
+const std::vector<Gun> GameDef::INITIAL_GUNS{{GUN_SHODDY_PISTOL}};
 
 // Store constants
 const float Store::ITEM_TILE_SIZE = 40.0f;
@@ -51,8 +93,8 @@ const std::array<Store::Item, 5> Store::ITEMS{{
 	Store::Item { "Okay-ish handgun",  50, "It works for now", GUN_OKAYISH_PISTOL },
 	Store::Item { "Rightside boye",  200, "Shoots to the right, but shoots a lotta", GUN_RIGHTSIDE_SHOTGUN },
 	Store::Item { "Machine Boy", 800, "Yeahhhh", GUN_MACHINE_BOY },
+	Store::Item { "EXPLD151", 1000, "explode the world", GUN_EXPLD },
 	Store::Item { "Gravkiller", 2000, "Chase 'em'", GUN_GRAVKILLER, },
-	Store::Item { "EXPLD151", 3000, "explode the world", GUN_EXPLD },
 }};
 
 // All related to enemies

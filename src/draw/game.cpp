@@ -101,6 +101,12 @@ void draw::game(const GameState &state, FrameContext &frame,
 		shape.setOutlineThickness(2.0f);
 		ctx.window.draw(shape);
 
+		// Draw gun sprite
+		sf::Sprite sprite;
+		sprite.setTexture(ctx.assets.textures.guns.get(gun.specs.icon));
+		sprite.setPosition(x, y);
+		ctx.window.draw(sprite);
+
 		// Draw gun number
 		sf::Text text;
 		text.setFont(ctx.assets.papyrus);
@@ -125,7 +131,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 	draw::statusbar(ctx, "not-hunger", state.player.nourishment,
 				  state.player.maxNourishment, 150.0, 0.0, 100.0, 32.0,
 				  sf::Color::Yellow, sf::Color::Red);
-	draw::statusbar(ctx, "fog-awareness", state.player.sanity,
+	draw::statusbar(ctx, "sanity", state.player.sanity,
 				  state.player.maxSanity, 330.0, 0.0, 100.0, 49.0,
 				  sf::Color(100, 100, 100), sf::Color::Red);
 

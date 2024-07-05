@@ -60,6 +60,13 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			buyText.setCharacterSize(15);
 			ctx.window.draw(buyText);
 		}
+
+		auto& gun = Store::ITEMS[i].gun;
+		// Draw gun sprite
+		sf::Sprite sprite;
+		sprite.setTexture(ctx.assets.textures.guns.get(gun.icon));
+		sprite.setPosition(x, y);
+		ctx.window.draw(sprite);
 	}
 
 	// If the player hovered on an item show its tooltip
