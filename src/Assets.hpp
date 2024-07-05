@@ -8,8 +8,10 @@
 struct Assets {
 	struct Sound {
 		sf::SoundBuffer machineGunBuffer, handgunBuffer, shotgunBuffer,
-			cashBuffer, hitBuffer, coinsBuffer;
-		sf::Sound machineGun, handgun, shotgun, cash, hit, coins;
+			cashBuffer, hitBuffer, coinsBuffer, menuSelectBuffer;
+		sf::Sound machineGun, handgun, shotgun, cash, hit, coins, menuSelect;
+
+		sf::Music heartbeat;
 
 		sf::Music music_Phase1;
 		sf::Music music_Phase2;

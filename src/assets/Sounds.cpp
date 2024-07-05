@@ -8,6 +8,8 @@ Assets::Sound::Sound() {
 		|| !cashBuffer.loadFromFile("sfx/cash.wav") 
 		|| !coinsBuffer.loadFromFile("sfx/coins.wav") 
 		|| !hitBuffer.loadFromFile("sfx/hit.wav")
+		|| !menuSelectBuffer.loadFromFile("sfx/menu_select.wav")
+		|| !heartbeat.openFromFile("sfx/heartbeat.mp3")
 		|| !music_Phase1.openFromFile("music/clapmusic.mp3")
 		|| !music_Phase2.openFromFile("music/1234_lasmanos.mp3")
 		// || music_Phase3.openFromFile("music/desert3.mp3")
@@ -27,6 +29,9 @@ Assets::Sound::Sound() {
 	hit.setBuffer(hitBuffer);
 	hit.setVolume(30.0f);
 
+	menuSelect.setBuffer(menuSelectBuffer);
+
+	heartbeat.setLoop(true);
 	music_Phase1.setLoop(true);
 	music_Phase2.setLoop(true);
 	music_Phase3.setLoop(true);

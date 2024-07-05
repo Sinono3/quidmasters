@@ -10,13 +10,13 @@ void draw::gameOver(const GameState& state, DrawContext& context) {
 	std::string subText;
 
 	switch (state.lostBecause) {
-	case DueToHealth:
+	case LoseCondition::DueToHealth:
 		subText = "You and your pet died.";
 		break;
-	case DueToHunger:
+	case LoseCondition::DueToHunger:
 		subText = "Your pet famished and ate you.";
 		break;
-	case DueToFog:
+	case LoseCondition::DueToFog:
 		subText = "...";
 		break;
 	}

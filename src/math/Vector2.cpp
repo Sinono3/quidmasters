@@ -1,50 +1,52 @@
 #include <cmath>
 #include <algorithm>
 template<typename T>
-Vector2<T>::Vector2() : x(0), y(0) {}
+constexpr Vector2<T>::Vector2() : x(0), y(0) {}
 
 template<typename T>
-Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
+constexpr Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
 
 template<typename T>
-Vector2<T>::Vector2(sf::Vector2<T> v) : x(v.x), y(v.y) { }
+constexpr Vector2<T>::Vector2(sf::Vector2<T> v) : x(v.x), y(v.y) { }
 
 template<typename T>
-T Vector2<T>::dot(const Vector2& other) const { return x * other.x + y * other.y; }
+constexpr T Vector2<T>::dot(const Vector2& other) const { return x * other.x + y * other.y; }
 
 template<typename T>
-T Vector2<T>::norm() const { return sqrt(norm_sq()); }
+constexpr T Vector2<T>::norm() const { return std::sqrt(norm_sq()); }
 
 template<typename T>
-T Vector2<T>::norm_sq() const { return dot(*this); }
+constexpr T Vector2<T>::norm_sq() const { return dot(*this); }
 
 template<typename T>
-Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }
+constexpr Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }
 
-template <typename T> Vector2<T> Vector2<T>::rotate(float angle) const {
+template <typename T>
+constexpr Vector2<T> Vector2<T>::rotate(float angle) const {
 	return Vector2f(x * std::cos(angle) - y * std::sin(angle),
 					x * std::sin(angle) + y * std::cos(angle));
 }
 
-template <typename T> Vector2<T> Vector2<T>::clamp(float minX, float minY, float maxX, float maxY) const {
+template <typename T>
+constexpr Vector2<T> Vector2<T>::clamp(float minX, float minY, float maxX, float maxY) const {
 	return Vector2(std::clamp(x, minX, maxX), std::clamp(y, minY, maxY));
 }
 
 // Operators
 template<typename T>
-Vector2<T> Vector2<T>::operator+(const Vector2 &other) const {
+constexpr Vector2<T> Vector2<T>::operator+(const Vector2 &other) const {
 	return Vector2(x + other.x, y + other.y);
 }
 template<typename T>
-Vector2<T> Vector2<T>::operator-(const Vector2 &other) const {
+constexpr Vector2<T> Vector2<T>::operator-(const Vector2 &other) const {
 	return Vector2(x - other.x, y - other.y);
 }
 template<typename T>
-Vector2<T> Vector2<T>::operator-() const {
+constexpr Vector2<T> Vector2<T>::operator-() const {
 	 return Vector2(-x, -y); }
 
 template<typename T>
-Vector2<T> Vector2<T>::operator*(T scalar) const {
+constexpr Vector2<T> Vector2<T>::operator*(T scalar) const {
 	return Vector2(scalar * x, scalar * y);
 }
 
@@ -61,7 +63,7 @@ sf::Vector2<T> Vector2<T>::toSFML() const {
 
 template<typename T>
 template<typename U>
-Vector2<U> Vector2<T>::to() const {
+constexpr Vector2<U> Vector2<T>::to() const {
 	return { (U)x, (U)y };
 }
 

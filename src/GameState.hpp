@@ -10,12 +10,14 @@
 #include <vector>
 #include <optional>
 
-enum GameStage {
+enum class GameStage {
 	Playing,
+	Paused,
+	Menu,
 	Lost,
 };
 
-enum LoseCondition {
+enum class LoseCondition {
 	DueToHealth,
 	DueToHunger,
 	DueToFog,
@@ -52,7 +54,7 @@ struct GameState {
 	float enemySpawnTime = 1.0f;
 	int wave = 0;
 	bool inBreak = true;
-	float breakTime = 1.0f;
+	float breakTime = 0.01f;
 
 	// Miscellaneous state
 	std::optional<Message> message;
@@ -62,7 +64,7 @@ struct GameState {
 	bool hacksON = false;
 
 	constexpr GameState() {
-		stage = GameStage::Playing;
+    	player.pos = GameDef::GAME_CENTER;
 		// Set the guns to be the ones in INITIAL_GUNS
 		guns.assign(GameDef::INITIAL_GUNS.begin(), GameDef::INITIAL_GUNS.end());
 	}

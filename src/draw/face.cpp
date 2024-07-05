@@ -1,12 +1,12 @@
 #include "../draw.hpp"
 
 // Frown goes from -1 to 1, indicating how happy the face is
-void draw::face(DrawContext &ctx, Vector2f position, float frown) {
+void draw::face(DrawContext &ctx, Vector2f position, float headRadius, float frown, float eyeRadius) {
 	float initialX = position.x;
 	float initialY = position.y;
 
 	// head
-	const float HEAD_R = 50.0f;
+	float HEAD_R = headRadius;
 	sf::CircleShape head(HEAD_R, 30);
 	head.setPosition(initialX - HEAD_R, initialY - HEAD_R - 30.0f);
 	head.setFillColor(sf::Color::Black);
@@ -15,7 +15,7 @@ void draw::face(DrawContext &ctx, Vector2f position, float frown) {
 	ctx.window.draw(head);
 
 	// eyes
-	const float R = 5.0f;
+	float R = eyeRadius;
 	sf::CircleShape eye(R, 10.0f);
 	eye.setPosition(initialX - 20.0 - R, initialY - 50.0 - R);
 	eye.setFillColor(sf::Color::White);

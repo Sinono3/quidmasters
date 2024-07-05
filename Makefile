@@ -15,6 +15,8 @@ SRC = src/main.cpp\
 	src/draw/face.cpp\
 	src/draw/game.cpp\
 	src/draw/gameOver.cpp\
+	src/draw/menu.cpp\
+	src/draw/pausedOverlay.cpp\
 	src/draw/store.cpp\
 	src/draw/statusbar.cpp\
 	src/math/physics.cpp
@@ -35,7 +37,8 @@ all: $(EXE)
 run: $(EXE)
 	$(EXE)
 rebuild: clean $(EXE)
-rebuild-run: clean run
+rebuild-run: clean $(EXE)
+	$(EXE)
 clean:
 	rm -rf $(BUILDDIR)
 .PHONY: all run clean

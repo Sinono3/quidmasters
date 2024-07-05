@@ -5,7 +5,18 @@
 
 const int GameDef::SCREEN_WIDTH = 800;
 const int GameDef::SCREEN_HEIGHT = 600;
+const Vector2i GameDef::SCREEN_SIZE(SCREEN_WIDTH, SCREEN_HEIGHT);
 const float GameDef::SCALE = 10.0f;
+
+const float GameDef::GAME_WIDTH = SCREEN_WIDTH / SCALE;
+const float GameDef::GAME_HEIGHT = SCREEN_HEIGHT / SCALE;
+const Vector2f GameDef::GAME_SIZE(GAME_WIDTH, GAME_HEIGHT);
+const Vector2f GameDef::GAME_CENTER = GAME_SIZE * (1.0f / 2.0f);
+
+const float GameDef::MIN_X = -GAME_WIDTH;
+const float GameDef::MIN_Y = -GAME_HEIGHT;
+const float GameDef::MAX_X = 2.0f * GAME_WIDTH;
+const float GameDef::MAX_Y = 2.0f * GAME_HEIGHT;
 
 const float Player::RADIUS = 1.0f;
 const float Player::RADIUS_SQ = Player::RADIUS * Player::RADIUS;
@@ -25,9 +36,9 @@ const Gun GUN_RIGHTSIDE_SHOTGUN = { .type = Gun::Type::Shotgun, .firePeriod = Un
 const Gun GUN_MACHINE_BOY = { .type = Gun::Type::MachineGun, .firePeriod = UniVar(0.08f, 0.1f),
 	.damage = UniVar(1.0f, 1.8f), .knockback = UniVar(0.0f, 0.15f), .bulletSpeed = UniVar(100.0f, 200.0f),
 	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 2, };
-const Gun GUN_GRAVKILLER = { .type = Gun::Type::Homing, .firePeriod = UniVar(0.08f, 0.1f),
+const Gun GUN_GRAVKILLER = { .type = Gun::Type::Homing, .firePeriod = UniVar(0.2f, 0.4f),
 	.damage = UniVar(1.0f, 1.8f), .knockback = UniVar(0.0f, 0.15f), .bulletSpeed = UniVar(10.0f, 20.0f),
-	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 2, };
+	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 4, };
 const Gun GUN_EXPLD = { .type = Gun::Type::Shotgun, .firePeriod = UniVar(8.08f, 12.1f),
 	.damage = UniVar(5.0f, 4.8f), .knockback = UniVar(0.7f, 0.9f), .bulletSpeed = UniVar(100.0f, 200.0f),
 	.accuracy = UniVar(-3.14f, 3.14f), .bulletsPerFire = 4000, };

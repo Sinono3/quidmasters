@@ -10,7 +10,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 	auto cameraTransform =
 		sf::Transform()
 			.scale(GameDef::SCALE, GameDef::SCALE)
-			.translate((-frame.cameraPos + frame.screenCenter).toSFML());
+			.translate((-frame.cameraPos + GameDef::GAME_CENTER).toSFML());
 
 	// used for game world rendering
 	sf::RenderStates worldRenderState;
@@ -138,14 +138,20 @@ void draw::game(const GameState &state, FrameContext &frame,
 		float x = 720.0f + 5.0f * std::sin(t + 1.41f);
 		float y = 90.0f + 2.0f * std::cos(t * 2.0f);
 
+		// Frown is based on average of health and nourishment
 		float howsItGoin =
 			((state.player.health / state.player.maxHealth) +
-			 (state.player.nourishment / state.player.maxNourishment) +
-			 (state.player.sanity / state.player.maxSanity)) /
-			3.0f;
+			 (state.player.nourishment / state.player.maxNourishment)) /
+			2.0f;
 		float frown = (howsItGoin * 3.0) - 2.0;
 
-		draw::face(ctx, Vector2f(x, y), frown);
+		// Eye radius inverse proportional to = Hunger level + Waves
+		float waves = state.wave;
+		float eyeRadius = 5.0f / std::max(1.0f, waves);
+
+		// Head radius increase proportional to waves
+		float headRadius = 50.0f * (1.0f + waves * 0.01f);
+		draw::face(ctx, Vector2f(x, y), headRadius, frown, eyeRadius);
 	}
 
 	// Show coins
@@ -204,4 +210,9 @@ void draw::game(const GameState &state, FrameContext &frame,
 						   .scale(1.0f + fact, 1.0f + fact);
 		ctx.window.draw(text, st);
 	}
+
+	// Fog
+	float distFromCenter = (state.player.pos - GameDef::GAME_CENTER).norm();
+	float notoriety = std::max(0.0f, distFromCenter - 30.0f) / 500.0f;
+	draw::fog(ctx, notoriety, ctx.time);
 }

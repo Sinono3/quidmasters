@@ -136,22 +136,27 @@ void systems::player::hunger(GameState &state, const FrameContext &frame) {
 		}
 	}		
 }
-void systems::player::loseCondition(GameState &state, const FrameContext &frame) {
+void systems::player::loseCondition(GameState &state, const FrameContext &frame, Assets::Sound& sound) {
+	bool lost = false;
+
 	// Player lose conditions
 	if (state.player.health <= 0.0f) {
-		state.stage = Lost;
-		state.lostBecause = DueToHealth;
-		return;
+		lost = true;
+		state.lostBecause = LoseCondition::DueToHealth;
+	} else if (state.player.nourishment <= 0.0f) {
+		lost = true;
+		state.lostBecause = LoseCondition::DueToHunger;
+	} else if (state.player.sanity <= 0.0f) {
+		lost = true;
+		state.lostBecause = LoseCondition::DueToFog;
 	}
-	if (state.player.nourishment <= 0.0f) {
-		state.stage = Lost;
-		state.lostBecause = DueToHunger;
-		return;
-	}
-	if (state.player.sanity <= 0.0f) {
-		state.stage = Lost;
-		state.lostBecause = DueToFog;
-		return;
+
+	if (lost) {
+		state.stage = GameStage::Lost;
+		sound.heartbeat.stop();
+		sound.music_Phase1.stop();
+		sound.music_Phase2.stop();
+		// sound.music_Phase3.stop();
 	}
 }
 
@@ -171,3 +176,11 @@ void systems::player::quidPickup(GameState &state, const FrameContext &frame, As
 		}
 	}
 }
+
+void systems::player::warnings(GameState &state, const FrameContext &frame, Assets::Sound& sound) {
+	// Play heartbeat sound effect when health is low
+	float heartbeatVolume = std::pow(1.0f - (state.player.health / state.player.maxHealth), 2.0f);
+	if (sound.heartbeat.getStatus() != sf::Music::Playing) sound.heartbeat.play();
+	sound.heartbeat.setVolume(heartbeatVolume * 100.0f);
+}
+

@@ -7,7 +7,9 @@ void getWaveEnemyClasses(EnemyClassCounter& enemyClassCount, int wave) {
 	// Big zombie
 	enemyClassCount[1] = std::max(0, (int)(wave / 1.7f));
 	// Fast zombie
-	enemyClassCount[2] = std::max(0, wave - 7);
+	// enemyClassCount[2] = std::max(0, wave - 7);
+	// Disabled these because they are SO FUCKING ANNOYING
+	enemyClassCount[2] = 0;
 }
 
 void systems::waves(GameState &state, const FrameContext &frame) {
@@ -35,7 +37,7 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 			return;
 		}
 
-		float spawnRadius = 1.2f * frame.screenCenter.norm();
+		float spawnRadius = 1.2f * GameDef::GAME_CENTER.norm();
 
 		// Spawn enemies
 		state.enemySpawnTime -= frame.dt;
@@ -48,7 +50,7 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 					EnemyClass enemyClass = GameDef::ENEMY_CLASSES[cls_idx];
 					Enemy newEnemy = enemyClass.produce();
 					float angle = std::uniform_real_distribution<float>(0.0f, 6.28f)(frame.rng);
-					newEnemy.pos = frame.screenCenter + Vector2f(spawnRadius, 0.0f).rotate(angle);
+					newEnemy.pos = GameDef::GAME_CENTER + Vector2f(spawnRadius, 0.0f).rotate(angle);
 
 					state.enemies.push_back(newEnemy);
 					state.spawnedEnemyClassCount[cls_idx]++;				

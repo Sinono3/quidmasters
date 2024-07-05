@@ -40,7 +40,7 @@ void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 		}
 
 		// Limit coordinates to game world
-		a.pos = a.pos.clamp(frame.minX, frame.minY, frame.maxX, frame.maxY);
+		a.pos = a.pos.clamp(GameDef::MIN_X, GameDef::MIN_Y, GameDef::MAX_X, GameDef::MAX_Y);
 	}
 }
 void systems::enemy::death(GameState &state, const FrameContext &frame, Assets::Sound &sound) {

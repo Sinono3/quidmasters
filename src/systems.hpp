@@ -8,14 +8,9 @@ struct FrameContext {
 	float dt;
 
 	// In world space
-	Vector2f screenSize;   // Vector (not point)
-	Vector2f screenCenter; // Vector (not point)
 	Vector2i screenMousePos;
 	Vector2f mousePos;
 	Vector2f cameraPos;
-
-	// Min and max coordinates for game objects
-	float minX, minY, maxX, maxY;
 
 	// Random
 	std::default_random_engine &rng;
@@ -26,8 +21,9 @@ namespace player {
 void movement(GameState &state, const FrameContext &frame);
 void guns(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 void hunger(GameState &state, const FrameContext &frame);
-void loseCondition(GameState &state, const FrameContext &frame);
+void loseCondition(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 void quidPickup(GameState &state, const FrameContext &frame, Assets::Sound& sound);
+void warnings(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 } // namespace player
 
 namespace bullets {

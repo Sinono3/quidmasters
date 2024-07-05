@@ -34,7 +34,9 @@ void systems::bullets::physics(GameState &state, const FrameContext &frame, Asse
 
 		// Check if the bullet has strayed too far away (we must delete it)
 		// If the bullet is out of this AABB, it is too far away
-		if (!aabb(bullet.pos.x, bullet.pos.y, 0.1f, 0.1f, frame.minX, frame.minY, frame.maxX - frame.minX, frame.maxY - frame.minY)) {
+		if (!aabb(bullet.pos.x, bullet.pos.y, 0.0f, 0.0f, GameDef::MIN_X,
+				  GameDef::MIN_Y, GameDef::MAX_X - GameDef::MIN_X,
+				  GameDef::MAX_Y - GameDef::MIN_Y)) {
 			shouldDelete = true;
 		}
 
@@ -52,8 +54,8 @@ void systems::bullets::homing(GameState &state, const FrameContext &frame) {
 	constexpr float FORCE = 5000.0f;
 
 	// Row = x, Col = y
-	int rows = (int)frame.screenSize.x;
-	int cols = (int)frame.screenSize.y;
+	int rows = (int)GameDef::GAME_WIDTH;
+	int cols = (int)GameDef::GAME_HEIGHT;
 	Vector2f forceField[rows][cols];
 
 
