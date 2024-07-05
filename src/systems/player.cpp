@@ -1,5 +1,5 @@
 #include <SFML/System.hpp>
-#include "../math/aabb.hpp"
+#include "../math/physics.hpp"
 #include "../systems.hpp"
 #include <optional>
 
@@ -160,9 +160,7 @@ void systems::player::quidPickup(GameState &state, const FrameContext &frame, As
 		 mit != state.quidDrops.end();) {
 		auto &quid = *mit;
 
-		if (aabb(quid.pos.x, quid.pos.y, 0.1f, 0.1f,
-				 state.player.pos.x - Player::RADIUS, state.player.pos.y - Player::RADIUS,
-				 Player::RADIUS * 2.0f, Player::RADIUS * 2.0f)) {
+		if (circleCollision(quid.pos, quid.getRadius(), state.player.pos, Player::RADIUS)) {
 			state.player.coins += quid.quid;
 			sound.coins.play();
 

@@ -17,7 +17,7 @@ SRC = src/main.cpp\
 	src/draw/gameOver.cpp\
 	src/draw/store.cpp\
 	src/draw/statusbar.cpp\
-	src/math/aabb.cpp
+	src/math/physics.cpp
 DEPENDS := $(wildcard *.hpp)
 BUILDDIR = build
 EXE = build/pou

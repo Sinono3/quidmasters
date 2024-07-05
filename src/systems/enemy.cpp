@@ -1,6 +1,6 @@
 #include "../systems.hpp"
 #include "../GameDef.hpp"
-#include "../math/aabb.hpp"
+#include "../math/physics.hpp"
 
 void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 	for (auto &enemy : state.enemies) {
@@ -18,9 +18,7 @@ void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 		enemy.pos = enemy.pos + enemy.vel * frame.dt;
 
 		// Damage player
-		if (aabb(state.player.pos.x - Player::RADIUS, state.player.pos.y - Player::RADIUS,
-				 Player::RADIUS * 2.0f, Player::RADIUS * 2.0f, enemy.pos.x - enemy.radius,
-				 enemy.pos.y - enemy.radius, enemy.radius * 2.0f, enemy.radius * 2.0f)) {
+		if (circleCollision(state.player.pos, Player::RADIUS, enemy.pos, enemy.radius)) {
 			state.player.health -= enemy.damagePerSecond;
 		}
 	}
@@ -35,9 +33,7 @@ void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 				continue;
 			auto &b = state.enemies[j];
 
-			if (aabb(a.pos.x - a.radius, a.pos.y - a.radius, a.radius * 2.0f,
-					 a.radius * 2.0f, b.pos.x - b.radius, b.pos.y - b.radius,
-					 b.radius * 2.0f, b.radius * 2.0f)) {
+			if (circleCollision(a.pos, a.radius, b.pos, b.radius)) {
 				Vector2f awayFromB = a.pos - b.pos;
 				a.vel = a.vel + awayFromB * 0.5f;
 			}

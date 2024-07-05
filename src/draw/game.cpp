@@ -24,9 +24,9 @@ void draw::game(const GameState &state, FrameContext &frame,
 
 	// Draw quid drops
 	for (auto &quid : state.quidDrops) {
-		auto radius = quid.quid / 10.0f;
+		auto radius = quid.getRadius();
 		auto inset = Vector2f(-radius, radius);
-		sf::CircleShape circle(radius, 20);
+		sf::CircleShape circle(radius, 4);
 		circle.setFillColor(sf::Color::Yellow);
 		circle.setPosition((quid.pos + inset).toSFML());
 		ctx.window.draw(circle, worldRenderState);

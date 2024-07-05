@@ -4,7 +4,7 @@ struct QuidDrop {
 	Vector2f pos;
 	int quid;
 
-	float getRadius() {
+	float getRadius() const {
 		return quid / 10.0f;
 	}
 };

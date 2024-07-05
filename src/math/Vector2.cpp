@@ -13,7 +13,10 @@ template<typename T>
 T Vector2<T>::dot(const Vector2& other) const { return x * other.x + y * other.y; }
 
 template<typename T>
-T Vector2<T>::norm() const { return sqrt(dot(*this)); }
+T Vector2<T>::norm() const { return sqrt(norm_sq()); }
+
+template<typename T>
+T Vector2<T>::norm_sq() const { return dot(*this); }
 
 template<typename T>
 Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }

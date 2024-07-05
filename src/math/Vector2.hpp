@@ -12,6 +12,7 @@ struct Vector2 {
 
 	T dot(const Vector2& other) const;
 	T norm() const;
+	T norm_sq() const;
 	Vector2 normalized() const;
 	Vector2 rotate(float angle) const;
 	Vector2 clamp(float minX, float minY, float maxX, float maxY) const;
