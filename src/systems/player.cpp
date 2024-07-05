@@ -29,19 +29,22 @@ void systems::player::movement(GameState &state, const FrameContext &frame) {
 
 void systems::player::guns(GameState &state, const FrameContext &frame,
 				  Assets::Sound &sound) {
+	// Update gun cooldowns
+	for (auto& gun : state.guns)
+		gun.advanceCooldownTimer(frame.dt);
+
 	// Right now we can only over items on the store, this may change later.
 	bool hoveringOverSomething = state.store.hoveredOn.has_value();
 
 	// Check if the mouse button was pressed and we are not hovering over anything
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !hoveringOverSomething) {
-		if (state.gunCooldown.getElapsedTime().asSeconds() > state.gunCooldownTime) {
-			state.gunCooldown.restart();
+		auto& gun = state.guns[state.currentGun];
 
-			auto& gun = state.guns[state.currentGun];
+		if (gun.hasCooledDown()) {
 			std::vector<Bullet>* bulletVector = &state.bullets;
 
 			// Play sound effect
-			switch (gun.type) {
+			switch (gun.specs.type) {
 			case Gun::Type::Handgun:
 				sound.handgun.play();
 				break;
@@ -58,15 +61,16 @@ void systems::player::guns(GameState &state, const FrameContext &frame,
 			}
 
 			// Fire, fire, fire
-			state.gunCooldownTime = gun.firePeriod.get(frame.rng);
-			auto damage = gun.damage.get(frame.rng);
-			auto knockback = gun.knockback.get(frame.rng);
-			auto speed = gun.bulletSpeed.get(frame.rng);
+			auto& specs = gun.specs;
+			gun.resetCooldownTimer(specs.firePeriod.get(frame.rng));
+			auto damage = specs.damage.get(frame.rng);
+			auto knockback = specs.knockback.get(frame.rng);
+			auto speed = specs.bulletSpeed.get(frame.rng);
 
 			// Add bullet
-			for (int i = 0; i < gun.bulletsPerFire; i++) {
+			for (int i = 0; i < specs.bulletsPerFire; i++) {
 				// Angle to add to bullet due to inaccuracy
-				auto angle = gun.accuracy.get(frame.rng);
+				auto angle = specs.accuracy.get(frame.rng);
 				auto pos = state.player.pos;
 				auto vel = state.player.getForward().rotate(angle) * speed;
 				bulletVector->push_back(Bullet{pos, vel, damage, knockback});

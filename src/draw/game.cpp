@@ -107,6 +107,14 @@ void draw::game(const GameState &state, FrameContext &frame,
 		text.setString(std::to_string(i + 1));
 		text.setCharacterSize(20.0f);
 		text.setPosition(x, y);
+
+		// Reloading
+		draw::statusbar(ctx, "time", gun.cooldownTimer, gun.cooldown, 
+		                x + 0.0f,
+						y + GUN_ICON_SIZE, GUN_ICON_SIZE, 10.0f, 
+						sf::Color(100, 100, 100, 100),
+						sf::Color(255, 0, 0, 100)
+					);
 		ctx.window.draw(text);
 	}
 
@@ -121,11 +129,6 @@ void draw::game(const GameState &state, FrameContext &frame,
 				  state.player.maxSanity, 330.0, 0.0, 100.0, 49.0,
 				  sf::Color(100, 100, 100), sf::Color::Red);
 
-	// Reloading
-	float reload = std::min(state.gunCooldown.getElapsedTime().asSeconds(),
-							state.gunCooldownTime);
-	draw::statusbar(ctx, "time", reload, state.gunCooldownTime, 0.0f, 80.0f,
-					30.0f, 20.0f, sf::Color(100, 100, 100), sf::Color::Red);
 
 	// Draw pet face
 

@@ -2,7 +2,7 @@
 #include "Bullet.hpp"
 #include "GameDef.hpp"
 #include "Enemy.hpp"
-#include "Gun.hpp"
+#include "GunState.hpp"
 #include "Player.hpp"
 #include "Store.hpp"
 #include "QuidDrop.hpp"
@@ -40,10 +40,8 @@ struct GameState {
 	std::vector<QuidDrop> quidDrops;
 
 	// Gun stuff
-	std::vector<Gun> guns;
+	std::vector<GunState> guns;
 	int currentGun = 0;
-	sf::Clock gunCooldown;
-	float gunCooldownTime = 0.0f;
 
 	// Store state
 	Store store;
@@ -63,7 +61,7 @@ struct GameState {
 	// HAX heheeheheh
 	bool hacksON = false;
 
-	GameState() {
+	constexpr GameState() {
 		stage = GameStage::Playing;
 		// Set the guns to be the ones in INITIAL_GUNS
 		guns.assign(GameDef::INITIAL_GUNS.begin(), GameDef::INITIAL_GUNS.end());
