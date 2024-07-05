@@ -1,5 +1,5 @@
 #include <SFML/System.hpp>
-#include "../aabb.hpp"
+#include "../math/aabb.hpp"
 #include "../systems.hpp"
 #include <optional>
 
@@ -37,21 +37,8 @@ void systems::player::guns(GameState &state, const FrameContext &frame,
 		if (state.gunCooldown.getElapsedTime().asSeconds() > state.gunCooldownTime) {
 			state.gunCooldown.restart();
 
-			// Fire, fire, fire
 			auto& gun = state.guns[state.currentGun];
-			state.gunCooldownTime = gun.firePeriod.get(frame.rng);
-			auto damage = gun.damage.get(frame.rng);
-			auto knockback = gun.knockback.get(frame.rng);
-			auto speed = gun.bulletSpeed.get(frame.rng);
-
-			// Add bullet
-			for (int i = 0; i < gun.bulletsPerFire; i++) {
-				// Angle to add to bullet due to inaccuracy
-				auto angle = gun.accuracy.get(frame.rng);
-				auto pos = state.player.pos;
-				auto vel = state.player.getForward().rotate(angle) * speed;
-				state.bullets.push_back(Bullet{pos, vel, damage, knockback});
-			}
+			std::vector<Bullet>* bulletVector = &state.bullets;
 
 			// Play sound effect
 			switch (gun.type) {
@@ -64,6 +51,25 @@ void systems::player::guns(GameState &state, const FrameContext &frame,
 			case Gun::Type::MachineGun:
 				sound.machineGun.play();
 				break;
+			case Gun::Type::Homing:
+				bulletVector = &state.homingBullets;
+				sound.hit.play();
+				break;
+			}
+
+			// Fire, fire, fire
+			state.gunCooldownTime = gun.firePeriod.get(frame.rng);
+			auto damage = gun.damage.get(frame.rng);
+			auto knockback = gun.knockback.get(frame.rng);
+			auto speed = gun.bulletSpeed.get(frame.rng);
+
+			// Add bullet
+			for (int i = 0; i < gun.bulletsPerFire; i++) {
+				// Angle to add to bullet due to inaccuracy
+				auto angle = gun.accuracy.get(frame.rng);
+				auto pos = state.player.pos;
+				auto vel = state.player.getForward().rotate(angle) * speed;
+				bulletVector->push_back(Bullet{pos, vel, damage, knockback});
 			}
 		}
 	}

@@ -3,9 +3,11 @@
 
 void getWaveEnemyClasses(EnemyClassCounter& enemyClassCount, int wave) {
 	// Normal zombie
-	enemyClassCount[0] = wave * 10;
+	enemyClassCount[0] = wave * 6;
 	// Big zombie
-	enemyClassCount[1] = std::max(0, wave / 2);
+	enemyClassCount[1] = std::max(0, (int)(wave / 1.7f));
+	// Fast zombie
+	enemyClassCount[2] = std::max(0, wave - 7);
 }
 
 void systems::waves(GameState &state, const FrameContext &frame) {
@@ -38,7 +40,8 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 		// Spawn enemies
 		state.enemySpawnTime -= frame.dt;
 		if (state.enemySpawnTime <= 0.0f) {
-			state.enemySpawnTime = ENEMY_SPAWN_TIME / (float)totalEnemyCount;
+			float totalEnemySpawnTime = 5.0f * state.wave;
+			state.enemySpawnTime = totalEnemySpawnTime / (float)totalEnemyCount;
 
 			for (int cls_idx = 0; cls_idx < ENEMY_CLASS_COUNT; cls_idx++) {
 				if (state.spawnedEnemyClassCount[cls_idx] < state.enemyClassCount[cls_idx]) {

@@ -30,7 +30,10 @@ void loseCondition(GameState &state, const FrameContext &frame);
 void quidPickup(GameState &state, const FrameContext &frame, GameSound& sound);
 } // namespace player
 
-void bullets(GameState &state, const FrameContext &frame, GameSound& sound);
+namespace bullets {
+void physics(GameState &state, const FrameContext &frame, GameSound& sound, std::vector<Bullet>&);
+void homing(GameState &state, const FrameContext &frame);
+}
 void waves(GameState &state, const FrameContext &frame);
 
 namespace enemy {

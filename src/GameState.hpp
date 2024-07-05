@@ -43,6 +43,7 @@ struct GameState {
 	Player player;
 	std::vector<Enemy> enemies;
 	std::vector<Bullet> bullets;
+	std::vector<Bullet> homingBullets;
 	std::vector<QuidDrop> quidDrops;
 
 	// Gun stuff

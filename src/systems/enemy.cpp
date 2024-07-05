@@ -1,6 +1,6 @@
 #include "../systems.hpp"
 #include "../Constants.hpp"
-#include "../aabb.hpp"
+#include "../math/aabb.hpp"
 
 void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 	for (auto &enemy : state.enemies) {
@@ -21,7 +21,7 @@ void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 		if (aabb(state.player.pos.x - RADIUS, state.player.pos.y - RADIUS,
 				 RADIUS * 2.0f, RADIUS * 2.0f, enemy.pos.x - enemy.radius,
 				 enemy.pos.y - enemy.radius, enemy.radius * 2.0f, enemy.radius * 2.0f)) {
-			state.player.health -= 0.1f;
+			state.player.health -= enemy.damagePerSecond;
 		}
 	}
 }
@@ -35,9 +35,9 @@ void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 				continue;
 			auto &b = state.enemies[j];
 
-			if (aabb(a.pos.x - RADIUS, a.pos.y - RADIUS, RADIUS * 2.0f,
-					 RADIUS * 2.0f, b.pos.x - RADIUS, b.pos.y - RADIUS,
-					 RADIUS * 2.0f, RADIUS * 2.0f)) {
+			if (aabb(a.pos.x - a.radius, a.pos.y - a.radius, a.radius * 2.0f,
+					 a.radius * 2.0f, b.pos.x - b.radius, b.pos.y - b.radius,
+					 b.radius * 2.0f, b.radius * 2.0f)) {
 				Vector2f awayFromB = a.pos - b.pos;
 				a.vel = a.vel + awayFromB * 0.5f;
 			}
@@ -63,7 +63,7 @@ void systems::enemy::death(GameState &state, const FrameContext &frame,
 
 
 			// Add a quid drop
-			auto quidDrop = std::uniform_int_distribution(1, 6)(frame.rng);
+			int quidDrop = enemy.calculateRandomQuidDrop(frame.rng);
 			state.quidDrops.push_back(QuidDrop { enemy.pos, quidDrop });
 
 			// Delete enemy

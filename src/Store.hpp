@@ -14,7 +14,7 @@ struct Store {
 
 	static constexpr float ITEM_TILE_SIZE = 40.0f;
 	static constexpr float SLACK = 10.0f;
-	static constexpr std::array<Item, 4> ITEMS{{
+	static constexpr std::array<Item, 5> ITEMS{{
 		Store::Item {
 			"Okay-ish handgun", 
 			50,
@@ -29,9 +29,15 @@ struct Store {
 		},
 		Store::Item {
 			"Machine Boy",
-			 1000,
+			 800,
 			 "Yeahhhh",
 			 GUN_MACHINE_BOY
+		},
+		Store::Item {
+			"Gravkiller",
+			 2000,
+			 "Kills the homing zombies",
+			 GUN_GRAVKILLER,
 		},
 		Store::Item {
 			"EXPLD151",

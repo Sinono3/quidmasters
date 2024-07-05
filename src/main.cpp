@@ -10,7 +10,7 @@
 #include "Enemy.hpp"
 #include "Bullet.hpp"
 #include "Store.hpp"
-#include "aabb.hpp"
+#include "math/aabb.hpp"
 #include "Constants.hpp"
 #include "systems.hpp"
 #include <SFML/Graphics.hpp>
@@ -30,10 +30,12 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
 	sf::Font font;
+	sf::Texture backgroundParking;
 	GameSound sound;
 	
-	if (!font.loadFromFile("fonts/papyrus.ttf")) {
+	if (!font.loadFromFile("fonts/papyrus.ttf") || !backgroundParking.loadFromFile("sprites/Level1.jpeg")) {
 		std::cerr << "We're fucked!" << std::endl;
+		return 1;
 	}
 
 	GameState state;
@@ -45,7 +47,9 @@ int main() {
 	Vector2f screenSize (SCREEN_WIDTH / TILE_SIZE, SCREEN_HEIGHT / TILE_SIZE);
 	Vector2f screenCenter = screenSize * (1.0f / 2.0f);
 	state.player.pos = screenCenter;
-	state.wave = 100;
+	// state.guns = {GUN_GRAVKILLER};
+	// state.wave = 80;
+	sound.music_Phase1.play();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -58,12 +62,12 @@ int main() {
         	.window = window,
         	.font = font,
         	.time = time.getElapsedTime().asSeconds(),
+        	.backgroundParking = backgroundParking
         };
 
 		Vector2i screenMousePos = Vector2i(sf::Mouse::getPosition(window));
 		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
     	float dt = deltaClock.restart().asSeconds();
-
 
 		FrameContext frame {
 			 // Delta time
@@ -91,7 +95,11 @@ int main() {
 				systems::player::quidPickup(state, frame, sound);
 
 				// Bullets
-				systems::bullets(state, frame, sound);
+				// One system for each type of bullet (to avoid putting a switch inside the system)
+				systems::bullets::physics(state, frame, sound, state.bullets);
+				systems::bullets::physics(state, frame, sound, state.homingBullets);
+				systems::bullets::homing(state, frame);
+
 				// Wave system and enemy spawning
 				systems::waves(state, frame);
 

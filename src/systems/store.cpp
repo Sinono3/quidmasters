@@ -1,6 +1,6 @@
 #include "../GameState.hpp"
 #include "../systems.hpp"
-#include "../aabb.hpp"
+#include "../math/aabb.hpp"
 
 bool lastFrame = false;
 

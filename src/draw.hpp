@@ -7,6 +7,7 @@ struct DrawContext {
 	sf::RenderWindow &window;
 	const sf::Font &font;
 	float time;
+	sf::Texture backgroundParking;
 };
 
 namespace draw {

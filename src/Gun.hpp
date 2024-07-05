@@ -20,6 +20,7 @@ struct Gun {
 		Handgun,
 		Shotgun,
 		MachineGun,
+		Homing
 	};
 
 	// Determines the sound it will make and other stuff
@@ -74,15 +75,24 @@ constexpr Gun GUN_MACHINE_BOY = {
 	.accuracy = UniVar(-0.02f, 0.02f),
 	.bulletsPerFire = 2,
 };
+constexpr Gun GUN_GRAVKILLER = {
+	.type = Gun::Type::Homing,
+	.firePeriod = UniVar(0.08f, 0.1f),
+	.damage = UniVar(1.0f, 1.8f),
+	.knockback = UniVar(0.0f, 0.15f),
+	.bulletSpeed = UniVar(10.0f, 20.0f),
+	.accuracy = UniVar(-0.02f, 0.02f),
+	.bulletsPerFire = 2,
+};
 constexpr Gun GUN_EXPLD = {
 	.type = Gun::Type::Shotgun,
 	// .firePeriod = UniVar(0.08f, 0.8f),
-	.firePeriod = UniVar(0.08f, 0.1f),
-	// .firePeriod = UniVar(8.08f, 12.1f),
+	// .firePeriod = UniVar(0.08f, 0.1f),
+	.firePeriod = UniVar(8.08f, 12.1f),
 	.damage = UniVar(5.0f, 4.8f),
 	.knockback = UniVar(0.0f, 0.4f),
-	// .bulletSpeed = UniVar(100.0f, 200.0f),
-	.bulletSpeed = UniVar(2.0f, 4.0f),
+	.bulletSpeed = UniVar(100.0f, 200.0f),
+	// .bulletSpeed = UniVar(2.0f, 4.0f),
 	.accuracy = UniVar(-3.14f, 3.14f),
-	.bulletsPerFire = 800,
+	.bulletsPerFire = 200,
 };

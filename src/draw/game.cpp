@@ -17,10 +17,26 @@ void draw::game(const GameState &state, FrameContext &frame,
 	sf::RenderStates worldRenderState;
 	worldRenderState.transform = cameraTransform;
 
+	// Draw background
+	sf::Sprite sprite;
+	sprite.setTexture(ctx.backgroundParking);
+	// sprite.setScale(1.5f, 1.5f);
+	ctx.window.draw(sprite);
+
+	// Draw quid drops
+	for (auto &quid : state.quidDrops) {
+		auto radius = quid.quid / 10.0f;
+		auto inset = Vector2f(-radius, radius);
+		sf::CircleShape circle(radius, 20);
+		circle.setFillColor(sf::Color::Yellow);
+		circle.setPosition((quid.pos + inset).toSFML());
+		ctx.window.draw(circle, worldRenderState);
+	}
+
 	// Draw player
 	auto inset = Vector2f(-RADIUS, -RADIUS);
 	sf::CircleShape playerCircle(RADIUS, 20);
-	playerCircle.setFillColor(sf::Color::Green);
+	playerCircle.setFillColor(sf::Color::White);
 	playerCircle.setPosition((state.player.pos + inset).toSFML());
 	ctx.window.draw(playerCircle, worldRenderState);
 
@@ -49,14 +65,13 @@ void draw::game(const GameState &state, FrameContext &frame,
 		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
 	}
 
-	// Draw quid drops
-	for (auto &quid : state.quidDrops) {
-		auto radius = quid.quid / 10.0f;
-		auto inset = Vector2f(-radius, radius);
-		sf::CircleShape circle(radius, 20);
-		circle.setFillColor(sf::Color::Yellow);
-		circle.setPosition((quid.pos + inset).toSFML());
-		ctx.window.draw(circle, worldRenderState);
+	// Draw homing bullets
+	for (auto &bullet : state.homingBullets) {
+		sf::Vertex line[] = {
+			sf::Vertex((bullet.pos - bullet.vel * 0.01f).toSFML(),
+					   sf::Color::Cyan),
+			sf::Vertex((bullet.pos).toSFML(), sf::Color::Blue)};
+		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
 	}
 
 	// Fog fog;
