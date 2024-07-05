@@ -1,42 +1,27 @@
-#include "Face.hpp"
-
-#include "GameSound.hpp"
+#include "Assets.hpp"
 #include "GameState.hpp"
-#include "Fog.hpp"
 #include "draw.hpp"
 #include "math/Vector2.hpp"
-#include "Gun.hpp"
-#include "Player.hpp"
-#include "Enemy.hpp"
-#include "Bullet.hpp"
-#include "Store.hpp"
 #include "math/aabb.hpp"
-#include "Constants.hpp"
+#include "GameDef.hpp"
 #include "systems.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <cmath>
 #include <iostream>
-#include <random>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <sstream>
 
-std::default_random_engine rng;
+std::default_random_engine rng = std::default_random_engine();
 
 int main() {
-	rng = std::default_random_engine();
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "A lonely dungeon");
+    sf::RenderWindow window(sf::VideoMode(GameDef::SCREEN_WIDTH, GameDef::SCREEN_HEIGHT), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
-	sf::Font font;
-	sf::Texture backgroundParking;
-	GameSound sound;
-	
-	if (!font.loadFromFile("fonts/papyrus.ttf") || !backgroundParking.loadFromFile("sprites/Level1.jpeg")) {
-		std::cerr << "We're fucked!" << std::endl;
-		return 1;
-	}
+
+	// Load the assets
+	Assets assets;
 
 	GameState state;
     Vector2f cameraPos;
@@ -44,12 +29,11 @@ int main() {
 	sf::Clock time;
 	sf::Clock deltaClock;
 
-	Vector2f screenSize (SCREEN_WIDTH / TILE_SIZE, SCREEN_HEIGHT / TILE_SIZE);
+	Vector2f screenSize (GameDef::SCREEN_WIDTH / GameDef::SCALE, GameDef::SCREEN_HEIGHT / GameDef::SCALE);
 	Vector2f screenCenter = screenSize * (1.0f / 2.0f);
 	state.player.pos = screenCenter;
-	// state.guns = {GUN_GRAVKILLER};
-	// state.wave = 80;
-	sound.music_Phase1.play();
+
+	assets.sound.music_Phase1.play();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -58,15 +42,8 @@ int main() {
                 window.close();
         }
 
-        DrawContext drawCtx {
-        	.window = window,
-        	.font = font,
-        	.time = time.getElapsedTime().asSeconds(),
-        	.backgroundParking = backgroundParking
-        };
-
 		Vector2i screenMousePos = Vector2i(sf::Mouse::getPosition(window));
-		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / TILE_SIZE)) + cameraPos - screenCenter;
+		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / GameDef::SCALE)) + cameraPos - screenCenter;
     	float dt = deltaClock.restart().asSeconds();
 
 		FrameContext frame {
@@ -85,19 +62,26 @@ int main() {
 			 .rng = rng,
 		};
 
+        DrawContext drawCtx {
+        	.window = window,
+        	.time = time.getElapsedTime().asSeconds(),
+        	.assets = assets,
+        	.frame = frame
+        };
+
 		window.clear(sf::Color(3, 2, 2));
         switch (state.stage) {
         	case GameStage::Playing:
 				systems::player::movement(state, frame);
-				systems::player::guns(state, frame, sound);
+				systems::player::guns(state, frame, assets.sound);
 				systems::player::hunger(state, frame);
 				systems::player::loseCondition(state, frame);
-				systems::player::quidPickup(state, frame, sound);
+				systems::player::quidPickup(state, frame, assets.sound);
 
 				// Bullets
 				// One system for each type of bullet (to avoid putting a switch inside the system)
-				systems::bullets::physics(state, frame, sound, state.bullets);
-				systems::bullets::physics(state, frame, sound, state.homingBullets);
+				systems::bullets::physics(state, frame, assets.sound, state.bullets);
+				systems::bullets::physics(state, frame, assets.sound, state.homingBullets);
 				systems::bullets::homing(state, frame);
 
 				// Wave system and enemy spawning
@@ -106,7 +90,7 @@ int main() {
 				// Enemy systems
 				systems::enemy::ai(state, frame);
 				systems::enemy::collision(state, frame);
-				systems::enemy::death(state, frame, sound);
+				systems::enemy::death(state, frame, assets.sound);
 
 				// Message system (make msgs disappear after a while)
 				systems::message(state, frame);

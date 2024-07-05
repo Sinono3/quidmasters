@@ -1,4 +1,23 @@
-SRC = src/main.cpp src/draw/gameOver.cpp src/Face.cpp src/aabb.cpp src/Fog.cpp src/GameSound.cpp src/systems/player.cpp src/systems/waves.cpp src/systems/bullets.cpp src/systems/enemy.cpp src/systems/store.cpp src/systems/message.cpp src/systems/hacks.cpp src/draw/game.cpp src/draw/statusbar.cpp src/draw/store.cpp
+SRC = src/main.cpp\
+	src/GameDef.cpp\
+	src/Assets.cpp\
+	src/assets/Sounds.cpp\
+	src/assets/Textures.cpp\
+	src/systems/enemy.cpp\
+	src/systems/hacks.cpp\
+	src/systems/store.cpp\
+	src/systems/waves.cpp\
+	src/systems/player.cpp\
+	src/systems/bullets.cpp\
+	src/systems/message.cpp\
+	src/systems/waves.cpp\
+	src/draw/fog.cpp\
+	src/draw/face.cpp\
+	src/draw/game.cpp\
+	src/draw/gameOver.cpp\
+	src/draw/store.cpp\
+	src/draw/statusbar.cpp\
+	src/math/aabb.cpp
 DEPENDS := $(wildcard *.hpp)
 BUILDDIR = build
 EXE = build/pou

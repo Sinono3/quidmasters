@@ -1,5 +1,5 @@
 #include "../systems.hpp"
-#include "../Constants.hpp"
+#include "../GameDef.hpp"
 
 void getWaveEnemyClasses(EnemyClassCounter& enemyClassCount, int wave) {
 	// Normal zombie
@@ -18,7 +18,7 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 		bool noEnemies = state.enemies.size() == 0;
 		bool allEnemiesSpawned = true;
 
-		for (int i = 0; i < ENEMY_CLASS_COUNT; i++) {
+		for (int i = 0; i < state.enemyClassCount.size(); i++) {
 			totalEnemyCount += state.enemyClassCount[i];
 			if (state.spawnedEnemyClassCount[i] != state.enemyClassCount[i]) {
 				allEnemiesSpawned = false;
@@ -31,7 +31,7 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 
 		if (waveOver) {
 			state.inBreak = true;
-			state.breakTime = BREAK_TIME;
+			state.breakTime = GameDef::BREAK_TIME;
 			return;
 		}
 
@@ -43,9 +43,9 @@ void systems::waves(GameState &state, const FrameContext &frame) {
 			float totalEnemySpawnTime = 5.0f * state.wave;
 			state.enemySpawnTime = totalEnemySpawnTime / (float)totalEnemyCount;
 
-			for (int cls_idx = 0; cls_idx < ENEMY_CLASS_COUNT; cls_idx++) {
+			for (int cls_idx = 0; cls_idx < state.enemyClassCount.size(); cls_idx++) {
 				if (state.spawnedEnemyClassCount[cls_idx] < state.enemyClassCount[cls_idx]) {
-					EnemyClass enemyClass = ENEMY_CLASSES[cls_idx];
+					EnemyClass enemyClass = GameDef::ENEMY_CLASSES[cls_idx];
 					Enemy newEnemy = enemyClass.produce();
 					float angle = std::uniform_real_distribution<float>(0.0f, 6.28f)(frame.rng);
 					newEnemy.pos = frame.screenCenter + Vector2f(spawnRadius, 0.0f).rotate(angle);

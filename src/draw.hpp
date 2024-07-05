@@ -1,20 +1,25 @@
 #pragma once
 #include "GameState.hpp"
+#include "Assets.hpp"
 #include "systems.hpp"
 #include <SFML/Graphics.hpp>
 
 struct DrawContext {
 	sf::RenderWindow &window;
-	const sf::Font &font;
+	const Assets& assets;
 	float time;
-	sf::Texture backgroundParking;
+	FrameContext& frame;
 };
 
 namespace draw {
-void game(const GameState &state, FrameContext &frame, DrawContext &context);
-void gameOver(const GameState &state, DrawContext &context);
+void game(const GameState &state, FrameContext &frame, DrawContext &ctx);
+void gameOver(const GameState &state, DrawContext &ctx);
+void store(const GameState &state, DrawContext &ctx);
+
+// Individual items
+void fog(DrawContext& ctx, float notoriety, float t);
 void statusbar(DrawContext &ctx, const char *label, float var, float max,
 			   float x, float y, float maxWidth, float height, sf::Color fill,
 			   sf::Color bg);
-void store(const GameState &state, DrawContext &context);
+void face(DrawContext &ctx, Vector2f position, float frown);
 } // namespace draw

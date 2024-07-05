@@ -1,37 +1,15 @@
-#include "Fog.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <sstream>
-#include "Constants.hpp"
+#include "../draw.hpp"
 
-Fog::Fog() {
-	if (!fogTexture.loadFromFile("sprites/fog2.png")) {
-		std::cerr << "fuck!" << std::endl;
-		exit(1);
-	}
-
-	std::stringstream ss;
-
-	// Generate fog text
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 10; j++) {
-			ss << "the fog is coming ";
-		}
-		ss << "\n";
-	}
-
-	fogText = ss.str();
-}
-void Fog::update() {}
-void Fog::draw(sf::RenderWindow &window, sf::Font& font, float t) {
+void draw::fog(DrawContext& ctx, float notoriety, float t) {
+	constexpr int FOGQ_X = 10;
+	constexpr int FOGQ_Y = 10;
 	// TODO: Debug purpose
 	// notoriety = std::sin(t / 10.0f)  / 2.0f + 1.0f;
-
-
-
-	
 	sf::Sprite fogSprite;
-	fogSprite.setTexture(fogTexture);
+	fogSprite.setTexture(ctx.assets.textures.fog);
 
 	for (int i = 0; i < FOGQ_Y; i++) {
 		for (int j = 0; j < FOGQ_X; j++) {
@@ -47,24 +25,24 @@ void Fog::draw(sf::RenderWindow &window, sf::Font& font, float t) {
 			fogSprite.setColor(sf::Color(255, 255, 255, notoriety * 100.0f));
 			// fogSprite.setTextureRect(sf::IntRect(tileX * 174, tileY * 174, 174, 174));
 			// fogSprite.setColor();
-			window.draw(fogSprite);
+			ctx.window.draw(fogSprite);
 		}
 	}
 
 	sf::Text theFogIsComing;
-	theFogIsComing.setFont(font);
+	theFogIsComing.setFont(ctx.assets.papyrus);
 	theFogIsComing.setCharacterSize(30.0f);
 	theFogIsComing.setString("the fog is coming ");
 	theFogIsComing.setFillColor(sf::Color(255, 255, 255, notoriety * 50.0f));
 	auto size = theFogIsComing.getGlobalBounds().getSize();
 
-	for (int y = -size.y; y < SCREEN_HEIGHT; y += size.y) {
-		for (int x = -size.x; x < SCREEN_WIDTH; x += size.x) {
+	for (int y = -size.y; y < GameDef::SCREEN_HEIGHT; y += size.y) {
+		for (int x = -size.x; x < GameDef::SCREEN_WIDTH; x += size.x) {
 			auto valueX = (int)((y + t) * 100.0f + y) % (int)size.x;
 			// auto valueY = (int)(t * 50.0f) % (int)size.y;
 			auto valueY = 0.0f;
 			theFogIsComing.setPosition(x + valueX, y + valueY);
-			window.draw(theFogIsComing);
+			ctx.window.draw(theFogIsComing);
 		}
 	}
 }

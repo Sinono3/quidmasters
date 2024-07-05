@@ -1,6 +1,6 @@
 #pragma once
 #include "Bullet.hpp"
-#include "Constants.hpp"
+#include "GameDef.hpp"
 #include "Enemy.hpp"
 #include "Gun.hpp"
 #include "Player.hpp"
@@ -22,16 +22,9 @@ enum LoseCondition {
 };
 
 struct Message {
-	enum class Type {
-		Hunger,
-		Store,
-		Evil,
-	};
-
-	Type type;
 	std::string text;
 	float time;
-	constexpr Message(Type type, const std::string_view& text, float time) : text(text), time(time) {}
+	constexpr Message(const std::string_view& text, float time) : text(text), time(time) {}
 };
 
 struct GameState {
@@ -72,17 +65,11 @@ struct GameState {
 
 	GameState() {
 		stage = GameStage::Playing;
-		guns = {GUN_SHODDY_PISTOL};
-		// guns = {GUN_SHODDY_PISTOL, GUN_OKAYISH_PISTOL, GUN_RIGHTSIDE_SHOTGUN, GUN_MACHINE_BOY, GUN_EXPLO};
+		// Set the guns to be the ones in INITIAL_GUNS
+		guns.assign(GameDef::INITIAL_GUNS.begin(), GameDef::INITIAL_GUNS.end());
 	}
 
 	void setMessage(Message message) {
-		if (this->message.has_value()) {
-			if (message.type == this->message->type) {
-				return;
-			}
-		}
-
 		this->message = message;
 	}
 };

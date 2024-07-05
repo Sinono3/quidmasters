@@ -1,17 +1,18 @@
-#include "GameSound.hpp"
+#include <iostream>
+#include "../Assets.hpp"
 
-GameSound::GameSound() {
+Assets::Sound::Sound() {
 	if (!machineGunBuffer.loadFromFile("sfx/mg.wav")
 		|| !handgunBuffer.loadFromFile("sfx/handgun.wav")
 		|| !shotgunBuffer.loadFromFile("sfx/shotgun.wav")
 		|| !cashBuffer.loadFromFile("sfx/cash.wav") 
 		|| !coinsBuffer.loadFromFile("sfx/coins.wav") 
 		|| !hitBuffer.loadFromFile("sfx/hit.wav")
-		|| music_Phase1.openFromFile("music/clapmusic.mp3")
-		|| music_Phase2.openFromFile("music/1234_lasmanos.mp3")
+		|| !music_Phase1.openFromFile("music/clapmusic.mp3")
+		|| !music_Phase2.openFromFile("music/1234_lasmanos.mp3")
 		// || music_Phase3.openFromFile("music/desert3.mp3")
 	) {
-		std::cerr << "We're fucked" << std::endl;
+		std::cerr << "Error while loading sound assets" << std::endl;
 		exit(1);
 	}
 

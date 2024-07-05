@@ -10,7 +10,7 @@ void systems::hacks(GameState &state, const FrameContext &frame) {
 	) {
 		state.player.coins = 10000;
 		state.hacksON = true;
-		state.setMessage(Message(Message::Type::Evil, "bingo", 1.0f));
+		state.setMessage(Message("bingo", 1.0f));
 	}
 
 	// Kill all enemies rn
@@ -27,8 +27,8 @@ void systems::hacks(GameState &state, const FrameContext &frame) {
 		state.enemies.clear();
 
 		// Kill off not yet spawned enemies
-		for (int i = 0; i < ENEMY_CLASS_COUNT; i++) {
-			auto enemy = ENEMY_CLASSES[i].produce();
+		for (int i = 0; i < state.enemyClassCount.size(); i++) {
+			auto enemy = GameDef::ENEMY_CLASSES[i].produce();
 
 			for (int j = state.spawnedEnemyClassCount[i]; j < state.enemyClassCount[i]; j++) {
 				totalQuidGenerated += enemy.calculateRandomQuidDrop(frame.rng);
@@ -39,7 +39,7 @@ void systems::hacks(GameState &state, const FrameContext &frame) {
 
 		state.player.coins += totalQuidGenerated;
 		state.player.nourishment = state.player.maxNourishment;
-		state.setMessage(Message(Message::Type::Evil, "kill 'em alll!!!!'", 1.0f));
+		state.setMessage(Message("kill 'em alll!!!!'", 1.0f));
 	}
 
 	// Skip break time

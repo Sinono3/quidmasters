@@ -2,7 +2,7 @@
 #include "../systems.hpp"
 #include <optional>
 
-void systems::bullets::physics(GameState &state, const FrameContext &frame, GameSound& sound, std::vector<Bullet>& bulletVector) {
+void systems::bullets::physics(GameState &state, const FrameContext &frame, Assets::Sound& sound, std::vector<Bullet>& bulletVector) {
 	for (std::vector<Bullet>::iterator mit = bulletVector.begin();
 		 mit != bulletVector.end();) {
 		Bullet &bullet = *mit;

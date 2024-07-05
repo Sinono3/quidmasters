@@ -4,6 +4,10 @@
 #include "math/Vector2.hpp"
 
 struct Player {
+	// defined in `definitions.cpp`
+	static const float RADIUS;
+	static const float RADIUS_SQ;
+
 	Vector2f pos = {2.0f, 2.0f};
     float angle = 0.0f;
     float health = 10.0f, maxHealth = 10.0f;

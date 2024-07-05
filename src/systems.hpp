@@ -1,5 +1,5 @@
 #pragma once
-#include "GameSound.hpp"
+#include "Assets.hpp"
 #include "GameState.hpp"
 #include <random>
 
@@ -24,14 +24,14 @@ struct FrameContext {
 namespace systems {
 namespace player {
 void movement(GameState &state, const FrameContext &frame);
-void guns(GameState &state, const FrameContext &frame, GameSound &sound);
+void guns(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 void hunger(GameState &state, const FrameContext &frame);
 void loseCondition(GameState &state, const FrameContext &frame);
-void quidPickup(GameState &state, const FrameContext &frame, GameSound& sound);
+void quidPickup(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 } // namespace player
 
 namespace bullets {
-void physics(GameState &state, const FrameContext &frame, GameSound& sound, std::vector<Bullet>&);
+void physics(GameState &state, const FrameContext &frame, Assets::Sound& sound, std::vector<Bullet>&);
 void homing(GameState &state, const FrameContext &frame);
 }
 void waves(GameState &state, const FrameContext &frame);
@@ -39,7 +39,7 @@ void waves(GameState &state, const FrameContext &frame);
 namespace enemy {
 void ai(GameState &state, const FrameContext &frame);
 void collision(GameState &state, const FrameContext &frame);
-void death(GameState &state, const FrameContext &frame, GameSound &sound);
+void death(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 }; // namespace enemy
 
 void message(GameState &state, const FrameContext &frame);

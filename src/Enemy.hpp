@@ -4,11 +4,6 @@
 #include <random>
 
 struct Enemy {
-	enum class Kind {
-		Normal,
-		Grav
-	};
-
 	Vector2f pos = {5.0f, 5.0f};
 	Vector2f vel;
 	float maxSpeed, acceleration;
@@ -16,7 +11,6 @@ struct Enemy {
 	float radius; // Radius of enemy circle
 	float damagePerSecond;
 	sf::Color color;
-	Kind kind;
 
 	// how many coins will this enemy get you
 	int calculateNetWorth() const {
@@ -36,8 +30,7 @@ struct EnemyClass {
 	float maxHealth = 10.0f;
 	float radius = 2.0f;
 	float damagePerSecond = 0.1f;
-	sf::Color color;
-	Enemy::Kind kind = Enemy::Kind::Normal;
+	std::tuple<unsigned char, unsigned char, unsigned char, unsigned char> color;
 
 	Enemy produce() const {
 		return Enemy {
@@ -47,8 +40,11 @@ struct EnemyClass {
 			.maxHealth = maxHealth,
 			.radius = radius,
 			.damagePerSecond = damagePerSecond,
-			.color = color,
-			.kind = kind,
+			.color = sf::Color(
+			                   std::get<0>(color), 
+			                   std::get<1>(color), 
+			                   std::get<2>(color),
+			                   std::get<3>(color)),
 		};
 	}
 };

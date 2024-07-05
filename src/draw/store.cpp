@@ -4,15 +4,15 @@
 
 void draw::store(const GameState &state, DrawContext &ctx) {
 	sf::Text storeTitle;
-	storeTitle.setFont(ctx.font);
+	storeTitle.setFont(ctx.assets.papyrus);
 	storeTitle.setFillColor(sf::Color(200, 200, 200, 100));
-	storeTitle.setPosition(Store::SLACK, SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK - 40.0f);
+	storeTitle.setPosition(Store::SLACK, GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK - 40.0f);
 	storeTitle.setString("store");
 	ctx.window.draw(storeTitle);
 
 	for (int i = 0; i < Store::ITEMS.size(); i++) {
 		float x = i * Store::ITEM_TILE_SIZE + Store::SLACK;
-		float y = SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK;
+		float y = GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK;
 
 		// Draw store item
     	sf::RectangleShape shape;
@@ -32,7 +32,7 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			ctx.window.draw(shape);
 
 			sf::Text buyText;
-			buyText.setFont(ctx.font);
+			buyText.setFont(ctx.assets.papyrus);
 			buyText.setFillColor(sf::Color(255, 255, 0, 200));
 			buyText.setPosition(x, y);
 			buyText.setString("SOLD\nOUT");
@@ -48,7 +48,7 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			ctx.window.draw(shape);
 
 			sf::Text buyText;
-			buyText.setFont(ctx.font);
+			buyText.setFont(ctx.assets.papyrus);
 			buyText.setFillColor(sf::Color(255, 255, 0, 200));
 			buyText.setPosition(x, y);
 			buyText.setString("BUY");
@@ -64,9 +64,9 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		const auto &item = Store::ITEMS[index];
 
 		sf::Text text;
-		text.setPosition(textX, SCREEN_HEIGHT - 100.0f);
+		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 100.0f);
 		text.setString(std::string(item.name));
-		text.setFont(ctx.font);
+		text.setFont(ctx.assets.papyrus);
 		text.setCharacterSize(30.0f);
 		text.setOutlineColor(sf::Color::Black);
 		text.setOutlineThickness(2.0f);
@@ -75,9 +75,9 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		std::stringstream description;
 		description << "Costs " << item.price << " quid. " << item.description;
 
-		text.setPosition(textX, SCREEN_HEIGHT - 40.0f);
+		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 40.0f);
 		text.setString(description.str());
-		text.setFont(ctx.font);
+		text.setFont(ctx.assets.papyrus);
 		text.setCharacterSize(20.0f);
 		ctx.window.draw(text);
 	}

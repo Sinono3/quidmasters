@@ -18,7 +18,7 @@ void draw::statusbar(DrawContext& ctx,
 	ctx.window.draw(shape);
 
 	sf::Text text;
-	text.setFont(ctx.font);
+	text.setFont(ctx.assets.papyrus);
 	text.setString(label);
 	text.setPosition(x, y);
 	text.setCharacterSize(20);

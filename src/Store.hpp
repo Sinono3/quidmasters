@@ -12,40 +12,10 @@ struct Store {
 		Gun gun;
 	};
 
-	static constexpr float ITEM_TILE_SIZE = 40.0f;
-	static constexpr float SLACK = 10.0f;
-	static constexpr std::array<Item, 5> ITEMS{{
-		Store::Item {
-			"Okay-ish handgun", 
-			50,
-			"It works for now",
-			GUN_OKAYISH_PISTOL
-		},
-		Store::Item {
-			"Rightside boye", 
-			200,
-			"Shoots to the right, but shoots a lotta",
-			GUN_RIGHTSIDE_SHOTGUN
-		},
-		Store::Item {
-			"Machine Boy",
-			 800,
-			 "Yeahhhh",
-			 GUN_MACHINE_BOY
-		},
-		Store::Item {
-			"Gravkiller",
-			 2000,
-			 "Kills the homing zombies",
-			 GUN_GRAVKILLER,
-		},
-		Store::Item {
-			"EXPLD151",
-			 3000,
-			 "explode the world",
-			 GUN_EXPLD
-		},
-	}};
+	// defined in `GameDef.cpp`
+	static const float ITEM_TILE_SIZE;
+	static const float SLACK;
+	static const std::array<Item, 5> ITEMS;
 
 	std::array<bool, ITEMS.size()> bought = { false };
 	std::optional<int> hoveredOn;

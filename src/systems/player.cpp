@@ -28,7 +28,7 @@ void systems::player::movement(GameState &state, const FrameContext &frame) {
 }
 
 void systems::player::guns(GameState &state, const FrameContext &frame,
-				  GameSound &sound) {
+				  Assets::Sound &sound) {
 	// Right now we can only over items on the store, this may change later.
 	bool hoveringOverSomething = state.store.hoveredOn.has_value();
 
@@ -125,7 +125,7 @@ void systems::player::hunger(GameState &state, const FrameContext &frame) {
 		if (state.hungerMsgTimer <= 0.0f) {
 			auto msgIndex = (std::uniform_int_distribution<int>(0, HUNGRY_LINES.size() - 1))(frame.rng);
 			auto msg = HUNGRY_LINES[msgIndex];
-			state.setMessage(Message(Message::Type::Hunger, msg, 3.0f));
+			state.setMessage(Message(msg, 3.0f));
 			state.hungerMsgTimer = MSG_PERIOD_HUNGER;
 		} else {
 			state.hungerMsgTimer -= frame.dt;
@@ -151,14 +151,14 @@ void systems::player::loseCondition(GameState &state, const FrameContext &frame)
 	}
 }
 
-void systems::player::quidPickup(GameState &state, const FrameContext &frame, GameSound& sound) {
+void systems::player::quidPickup(GameState &state, const FrameContext &frame, Assets::Sound& sound) {
 	for (std::vector<QuidDrop>::iterator mit = state.quidDrops.begin();
 		 mit != state.quidDrops.end();) {
 		auto &quid = *mit;
 
 		if (aabb(quid.pos.x, quid.pos.y, 0.1f, 0.1f,
-				 state.player.pos.x - RADIUS, state.player.pos.y - RADIUS,
-				 RADIUS * 2.0f, RADIUS * 2.0f)) {
+				 state.player.pos.x - Player::RADIUS, state.player.pos.y - Player::RADIUS,
+				 Player::RADIUS * 2.0f, Player::RADIUS * 2.0f)) {
 			state.player.coins += quid.quid;
 			sound.coins.play();
 

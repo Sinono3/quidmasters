@@ -4,7 +4,7 @@
 
 void draw::gameOver(const GameState& state, DrawContext& context) {
 	auto& window = context.window;
-	auto& font = context.font;
+	auto& font = context.assets.papyrus;
 
 	// Game over screen
 	std::string subText;

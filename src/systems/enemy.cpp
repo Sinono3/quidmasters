@@ -1,5 +1,5 @@
 #include "../systems.hpp"
-#include "../Constants.hpp"
+#include "../GameDef.hpp"
 #include "../math/aabb.hpp"
 
 void systems::enemy::ai(GameState &state, const FrameContext &frame) {
@@ -18,8 +18,8 @@ void systems::enemy::ai(GameState &state, const FrameContext &frame) {
 		enemy.pos = enemy.pos + enemy.vel * frame.dt;
 
 		// Damage player
-		if (aabb(state.player.pos.x - RADIUS, state.player.pos.y - RADIUS,
-				 RADIUS * 2.0f, RADIUS * 2.0f, enemy.pos.x - enemy.radius,
+		if (aabb(state.player.pos.x - Player::RADIUS, state.player.pos.y - Player::RADIUS,
+				 Player::RADIUS * 2.0f, Player::RADIUS * 2.0f, enemy.pos.x - enemy.radius,
 				 enemy.pos.y - enemy.radius, enemy.radius * 2.0f, enemy.radius * 2.0f)) {
 			state.player.health -= enemy.damagePerSecond;
 		}
@@ -47,8 +47,7 @@ void systems::enemy::collision(GameState &state, const FrameContext &frame) {
 		a.pos = a.pos.clamp(frame.minX, frame.minY, frame.maxX, frame.maxY);
 	}
 }
-void systems::enemy::death(GameState &state, const FrameContext &frame,
-				  GameSound &sound) {
+void systems::enemy::death(GameState &state, const FrameContext &frame, Assets::Sound &sound) {
 	// enemy health and death
 	for (std::vector<Enemy>::iterator mit = state.enemies.begin();
 		 mit != state.enemies.end();) {

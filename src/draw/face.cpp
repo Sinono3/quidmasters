@@ -1,8 +1,7 @@
-#include "Face.hpp"
+#include "../draw.hpp"
 
-Face::Face(sf::Vector2f position) : position(position) { }
-
-void Face::draw(sf::RenderTarget &window) {
+// Frown goes from -1 to 1, indicating how happy the face is
+void draw::face(DrawContext &ctx, Vector2f position, float frown) {
 	float initialX = position.x;
 	float initialY = position.y;
 
@@ -13,16 +12,16 @@ void Face::draw(sf::RenderTarget &window) {
 	head.setFillColor(sf::Color::Black);
 	head.setOutlineColor(sf::Color::White);
 	head.setOutlineThickness(1.0f);
-	window.draw(head);
+	ctx.window.draw(head);
 
 	// eyes
 	const float R = 5.0f;
 	sf::CircleShape eye(R, 10.0f);
 	eye.setPosition(initialX - 20.0 - R, initialY - 50.0 - R);
 	eye.setFillColor(sf::Color::White);
-	window.draw(eye);
+	ctx.window.draw(eye);
 	eye.setPosition(initialX + 20.0 - R, initialY - 50.0 - R);
-	window.draw(eye);
+	ctx.window.draw(eye);
 
 	// smile
 	const int POINT_COUNT = 10;
@@ -38,5 +37,5 @@ void Face::draw(sf::RenderTarget &window) {
 		points[i] = sf::Vertex(sf::Vector2f(initialX + (xCentered * width), initialY + y));
 	}
 
-	window.draw(points, POINT_COUNT, sf::LineStrip);
+	ctx.window.draw(points, POINT_COUNT, sf::LineStrip);
 }

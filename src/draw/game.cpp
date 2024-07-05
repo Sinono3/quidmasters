@@ -1,8 +1,7 @@
 #include <sstream>
-#include "../Constants.hpp"
+#include "../GameDef.hpp"
 #include "../draw.hpp"
 #include "../systems.hpp"
-#include "../Face.hpp"
 #include "../Store.hpp"
 
 void draw::game(const GameState &state, FrameContext &frame,
@@ -10,7 +9,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 	// Screen size in game units
 	auto cameraTransform =
 		sf::Transform()
-			.scale(TILE_SIZE, TILE_SIZE)
+			.scale(GameDef::SCALE, GameDef::SCALE)
 			.translate((-frame.cameraPos + frame.screenCenter).toSFML());
 
 	// used for game world rendering
@@ -19,7 +18,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 
 	// Draw background
 	sf::Sprite sprite;
-	sprite.setTexture(ctx.backgroundParking);
+	sprite.setTexture(ctx.assets.textures.bgL1);
 	// sprite.setScale(1.5f, 1.5f);
 	ctx.window.draw(sprite);
 
@@ -34,8 +33,8 @@ void draw::game(const GameState &state, FrameContext &frame,
 	}
 
 	// Draw player
-	auto inset = Vector2f(-RADIUS, -RADIUS);
-	sf::CircleShape playerCircle(RADIUS, 20);
+	auto inset = Vector2f(-Player::RADIUS, -Player::RADIUS);
+	sf::CircleShape playerCircle(Player::RADIUS, 20);
 	playerCircle.setFillColor(sf::Color::White);
 	playerCircle.setPosition((state.player.pos + inset).toSFML());
 	ctx.window.draw(playerCircle, worldRenderState);
@@ -104,7 +103,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 
 		// Draw gun number
 		sf::Text text;
-		text.setFont(ctx.font);
+		text.setFont(ctx.assets.papyrus);
 		text.setString(std::to_string(i + 1));
 		text.setCharacterSize(20.0f);
 		text.setPosition(x, y);
@@ -136,14 +135,14 @@ void draw::game(const GameState &state, FrameContext &frame,
 		float x = 720.0f + 5.0f * std::sin(t + 1.41f);
 		float y = 90.0f + 2.0f * std::cos(t * 2.0f);
 
-		Face face(sf::Vector2f(x, y));
 		float howsItGoin =
 			((state.player.health / state.player.maxHealth) +
 			 (state.player.nourishment / state.player.maxNourishment) +
 			 (state.player.sanity / state.player.maxSanity)) /
 			3.0f;
-		face.frown = (howsItGoin * 3.0) - 2.0;
-		face.draw(ctx.window);
+		float frown = (howsItGoin * 3.0) - 2.0;
+
+		draw::face(ctx, Vector2f(x, y), frown);
 	}
 
 	// Show coins
@@ -152,7 +151,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 		ss << "Quid: ";
 		ss << state.player.coins;
 		sf::Text text;
-		text.setFont(ctx.font);
+		text.setFont(ctx.assets.papyrus);
 		text.setString(ss.str());
 		text.setPosition(500.0, 0.0);
 		text.setCharacterSize(40);
@@ -166,7 +165,8 @@ void draw::game(const GameState &state, FrameContext &frame,
 		if (!state.inBreak) {
 			int totalEnemyCount = 0;
 			int remainingEnemyCount = state.enemies.size();
-			for (int i = 0; i < ENEMY_CLASS_COUNT; i++)
+
+			for (int i = 0; i < state.enemyClassCount.size(); i++)
 				totalEnemyCount += state.enemyClassCount[i];
 
 			ss << "Wave: " << state.wave << '\n'
@@ -177,7 +177,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 		} else {
 			ss << "breaktime";
 			draw::statusbar(ctx, ss.str().c_str(), state.breakTime,
-						  BREAK_TIME, 670, 540, 130, 60, sf::Color::Yellow,
+						  GameDef::BREAK_TIME, 670, 540, 130, 60, sf::Color::Yellow,
 						  sf::Color::Black);
 		}
 	}
@@ -188,7 +188,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 	// Show current pet message
 	if (state.message.has_value()) {
 		sf::Text text;
-		text.setFont(ctx.font);
+		text.setFont(ctx.assets.papyrus);
 		text.setString((*state.message).text);
 		text.setFillColor(sf::Color::Cyan);
 
@@ -197,7 +197,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 		sf::RenderStates st;
 		sf::Transform t;
 		float fact = 0.01f * std::sin(ctx.time * 20.0f);
-		st.transform = t.translate(SCREEN_WIDTH - width - 150.0f, 60.0f)
+		st.transform = t.translate(GameDef::SCREEN_WIDTH - width - 150.0f, 60.0f)
 						   .scale(1.0f + fact, 1.0f + fact);
 		ctx.window.draw(text, st);
 	}
