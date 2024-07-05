@@ -1,6 +1,5 @@
 #pragma once
-#include <SFML/System.hpp>
-#include <glm/vec2.hpp>
+#include <SFML/System/Vector2.hpp>
 
 template <typename T>
 struct Vector2 {
@@ -10,7 +9,6 @@ struct Vector2 {
 
 	// Constructor from other libraries' types
 	Vector2(sf::Vector2<T>);
-	Vector2(glm::vec2);
 
 	T dot(const Vector2& other) const;
 	T norm() const;
@@ -27,7 +25,6 @@ struct Vector2 {
 
 	// Conversion
 	sf::Vector2<T> toSFML() const;
-	glm::vec2 toGLM() const;
 	template<typename U>
 	Vector2<U> to() const;
 };

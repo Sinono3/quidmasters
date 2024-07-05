@@ -8,8 +8,6 @@ Vector2<T>::Vector2(T x, T y) : x(x), y(y) {}
 
 template<typename T>
 Vector2<T>::Vector2(sf::Vector2<T> v) : x(v.x), y(v.y) { }
-template<typename T>
-Vector2<T>::Vector2(glm::vec2 v) : x(v.x), y(v.y) { }
 
 template<typename T>
 T Vector2<T>::dot(const Vector2& other) const { return x * other.x + y * other.y; }
@@ -56,10 +54,6 @@ Vector2<T> Vector2<T>::operator*(T scalar) const {
 template<typename T>
 sf::Vector2<T> Vector2<T>::toSFML() const {
 	return sf::Vector2(x, y);
-}
-template<typename T>
-glm::vec2 Vector2<T>::toGLM() const {
-	return glm::vec2((float)x, (float)y);
 }
 
 template<typename T>
