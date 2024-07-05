@@ -3,6 +3,11 @@
 #include "../Store.hpp"
 
 void draw::store(const GameState &state, DrawContext &ctx) {
+	// Store only operates during break
+	if (!state.inBreak) {
+		return;
+	}
+
 	sf::Text storeTitle;
 	storeTitle.setFont(ctx.assets.papyrus);
 	storeTitle.setFillColor(sf::Color(200, 200, 200, 100));

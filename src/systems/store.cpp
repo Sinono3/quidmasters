@@ -6,6 +6,12 @@ bool lastFrame = false;
 
 void systems::store(GameState &state, const FrameContext& frame) {
 	state.store.hoveredOn.reset();
+
+	// Store only operates during break
+	if (!state.inBreak) {
+		return;
+	}
+
 	for (int i = 0; i < Store::ITEMS.size(); i++) {
 		float x = i * Store::ITEM_TILE_SIZE + Store::SLACK;
 		float y = GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK;
