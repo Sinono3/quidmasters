@@ -30,7 +30,7 @@ const Gun GUN_GRAVKILLER = { .type = Gun::Type::Homing, .firePeriod = UniVar(0.0
 	.accuracy = UniVar(-0.02f, 0.02f), .bulletsPerFire = 2, };
 const Gun GUN_EXPLD = { .type = Gun::Type::Shotgun, .firePeriod = UniVar(8.08f, 12.1f),
 	.damage = UniVar(5.0f, 4.8f), .knockback = UniVar(0.0f, 0.4f), .bulletSpeed = UniVar(100.0f, 200.0f),
-	.accuracy = UniVar(-3.14f, 3.14f), .bulletsPerFire = 200, };
+	.accuracy = UniVar(-3.14f, 3.14f), .bulletsPerFire = 4000, };
 const std::vector<Gun> GameDef::INITIAL_GUNS{{ GUN_SHODDY_PISTOL }};
 
 // Store constants
@@ -40,7 +40,7 @@ const std::array<Store::Item, 5> Store::ITEMS{{
 	Store::Item { "Okay-ish handgun",  50, "It works for now", GUN_OKAYISH_PISTOL },
 	Store::Item { "Rightside boye",  200, "Shoots to the right, but shoots a lotta", GUN_RIGHTSIDE_SHOTGUN },
 	Store::Item { "Machine Boy", 800, "Yeahhhh", GUN_MACHINE_BOY },
-	Store::Item { "Gravkiller", 2000, "Kills the homing zombies", GUN_GRAVKILLER, },
+	Store::Item { "Gravkiller", 2000, "Chase 'em'", GUN_GRAVKILLER, },
 	Store::Item { "EXPLD151", 3000, "explode the world", GUN_EXPLD },
 }};
 
