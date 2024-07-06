@@ -61,10 +61,10 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			ctx.window.draw(buyText);
 		}
 
-		auto& gun = Store::ITEMS[i].gun;
+		auto& item = Store::ITEMS[i];
 		// Draw gun sprite
 		sf::Sprite sprite;
-		sprite.setTexture(ctx.assets.textures.guns.get(gun.icon));
+		sprite.setTexture(ctx.assets.textures.icons.get(item.icon));
 		sprite.setPosition(x, y);
 		ctx.window.draw(sprite);
 	}

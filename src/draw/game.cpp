@@ -103,7 +103,7 @@ void draw::game(const GameState &state, FrameContext &frame,
 
 		// Draw gun sprite
 		sf::Sprite sprite;
-		sprite.setTexture(ctx.assets.textures.guns.get(gun.specs.icon));
+		sprite.setTexture(ctx.assets.textures.icons.get(gun.specs.icon));
 		sprite.setPosition(x, y);
 		ctx.window.draw(sprite);
 
@@ -149,6 +149,8 @@ void draw::game(const GameState &state, FrameContext &frame,
 			((state.player.health / state.player.maxHealth) +
 			 (state.player.nourishment / state.player.maxNourishment)) /
 			2.0f;
+		// float crazy = 1.0f - (state.player.sanity / state.player.maxSanity);
+		// float twitch = crazy * (std::sin(200.0f * ctx.time * crazy) + 0.1f * std::sin(10.0f * 3.14f * ctx.time * crazy));
 		float frown = (howsItGoin * 3.0) - 2.0;
 
 		// Eye radius inverse proportional to = Hunger level + Waves

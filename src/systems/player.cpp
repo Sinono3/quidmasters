@@ -137,7 +137,7 @@ void systems::player::hunger(GameState &state, const FrameContext &frame) {
 	}		
 }
 
-constexpr float INSANITY_RATE = 1.25f;
+constexpr float INSANITY_RATE = 1.0f;
 
 void systems::player::fog(GameState &state, const FrameContext &frame) {
 	float distFromCenter = (state.player.pos - GameDef::GAME_CENTER).norm() / 25.0f;
@@ -163,13 +163,7 @@ void systems::player::loseCondition(GameState &state, const FrameContext &frame,
 		state.lostBecause = LoseCondition::DueToFog;
 	}
 
-	if (lost) {
-		state.stage = GameStage::Lost;
-		sound.heartbeat.stop();
-		sound.music_Phase1.stop();
-		sound.music_Phase2.stop();
-		// sound.music_Phase3.stop();
-	}
+	if (lost) state.stage = GameStage::Lost;
 }
 
 void systems::player::quidPickup(GameState &state, const FrameContext &frame, Assets::Sound& sound) {

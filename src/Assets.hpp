@@ -4,7 +4,6 @@
 #include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include "Gun.hpp"
 
 struct Assets {
 	struct Sound {
@@ -22,6 +21,18 @@ struct Assets {
 	};
 
 	struct Textures {
+		enum class Icon {
+			Bazooka,
+			Grenade,
+			MachineGun,
+			Pistol,
+			Revolver,
+			Shotgun,
+
+			Medkit,
+			Book,
+		};
+
 		sf::Texture bgL1, fog;
 		struct {
 			sf::Texture pistol;
@@ -30,18 +41,22 @@ struct Assets {
 			sf::Texture machineGun;
 			sf::Texture bazooka;
 			sf::Texture grenade;
+			sf::Texture medkit;
+			sf::Texture book;
 
-			const sf::Texture& get(Gun::Icon icon) const {
+			const sf::Texture& get(Icon icon) const {
 				switch(icon) {
-					case Gun::Icon::Bazooka: return bazooka; break;
-					case Gun::Icon::Grenade: return grenade; break;
-					case Gun::Icon::MachineGun: return machineGun; break;
-					case Gun::Icon::Pistol: return pistol; break;
-					case Gun::Icon::Revolver: return revolver; break;
-					case Gun::Icon::Shotgun: return shotgun; break;
+					case Icon::Bazooka: return bazooka; break;
+					case Icon::Grenade: return grenade; break;
+					case Icon::MachineGun: return machineGun; break;
+					case Icon::Pistol: return pistol; break;
+					case Icon::Revolver: return revolver; break;
+					case Icon::Shotgun: return shotgun; break;
+					case Icon::Medkit: return medkit; break;
+					case Icon::Book: return book; break;
 				}
 			}
-		} guns;
+		} icons;
 
 		Textures();
 	};

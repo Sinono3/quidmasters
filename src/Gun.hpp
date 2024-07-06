@@ -1,6 +1,7 @@
 #pragma once
 #include <random>
 #include <variant>
+#include "Assets.hpp"
 
 // Uniform random variable
 class UniVar  {
@@ -23,19 +24,10 @@ struct Gun {
 		Homing
 	};
 
-	enum class Icon {
-		Bazooka,
-		Grenade,
-		MachineGun,
-		Pistol,
-		Revolver,
-		Shotgun
-	};
-
 	// Determines the sound it will make and other stuff
 	Type type;
 	// Determines which icon it will be displayed with
-	Icon icon;
+	Assets::Textures::Icon icon;
 	/// Seconds of firePeriod
 	UniVar firePeriod;
 	/// HP to remove
