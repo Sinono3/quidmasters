@@ -6,9 +6,9 @@
 void systems::player::movement(GameState &state, const FrameContext &frame) {
 	Vector2f wasd;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-		wasd.y = -1.0;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
 		wasd.y = 1.0;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+		wasd.y = -1.0;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
 		wasd.x = -1.0;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
@@ -24,7 +24,7 @@ void systems::player::movement(GameState &state, const FrameContext &frame) {
 
 	// Mouse look
 	Vector2f playerToMouse = frame.mousePos - state.player.pos;
-	state.player.angle = atan2(playerToMouse.y, playerToMouse.x);
+	state.player.angle = playerToMouse.angle();
 }
 
 void systems::player::guns(GameState &state, const FrameContext &frame,

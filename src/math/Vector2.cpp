@@ -19,6 +19,9 @@ template<typename T>
 constexpr T Vector2<T>::norm_sq() const { return dot(*this); }
 
 template<typename T>
+constexpr T Vector2<T>::angle() const { return std::atan2(y, x); }
+
+template<typename T>
 constexpr Vector2<T> Vector2<T>::normalized() const { return *this * (1.0f / norm()); }
 
 template <typename T>

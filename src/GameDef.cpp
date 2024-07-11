@@ -53,7 +53,7 @@ const Gun GUN_RIGHTSIDE_SHOTGUN = {
 	.damage = UniVar(4.9f, 6.1f),
 	.knockback = UniVar(0.0f, 0.4f),
 	.bulletSpeed = UniVar(200.0f, 300.0f),
-	.accuracy = UniVar(-0.02f, 1.0f),
+	.accuracy = UniVar(-1.0f, 0.02f),
 	.bulletsPerFire = 5,
 };
 const Gun GUN_MACHINE_BOY = {

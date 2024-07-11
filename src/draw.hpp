@@ -10,6 +10,7 @@ struct DrawContext {
 	const Assets& assets;
 	float time;
 	FrameContext& frame;
+	sf::Transform gameToScreen;
 };
 
 namespace draw {

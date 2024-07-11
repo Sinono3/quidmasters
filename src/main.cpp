@@ -25,19 +25,10 @@ int main() {
 
 	// Load the assets
 	Assets assets;
-	GameState state;
 	menu::State menu;
+	GameState state;
 	state.stage = GameStage::Menu;
 
-	// Set the initial conditions for the game
-	auto startGame = [&] () {
-	    // state = GameState();
-	    // state.stage = GameStage::Playing;
-
-    	// TODO: All these long-playing sound effects should be controlled by a system
-    	// assets.sound.music_Phase1.play();
-	};
-	startGame();
 	bool escapedPressedLastFrame = false;
 
     while (window.isOpen()) {
@@ -48,9 +39,23 @@ int main() {
         }
 
         // This was made constant for now
-        Vector2f cameraPos = GameDef::GAME_CENTER;
-		Vector2i screenMousePos = Vector2i(sf::Mouse::getPosition(window));
-		Vector2f mousePos = (screenMousePos.to<float>() * (1.0f / GameDef::SCALE)) + cameraPos - GameDef::GAME_CENTER;
+        Vector2f cameraPos(0.0f, GameDef::GAME_HEIGHT);
+        // Game to screen transform
+    	auto gameToScreen =
+    		sf::Transform()
+    			// Set an unit to be in game scale
+    			.scale(GameDef::SCALE, GameDef::SCALE)
+    			// Make the positive y-coordinate point upward, not downward.
+    			// (this is to make all math more standard)
+    			.scale(1.0f, -1.0f)
+    			// Center the screen on the camera position
+    			.translate((-cameraPos).toSFML());
+    			// .translate((-frame.cameraPos + GameDef::GAME_CENTER).toSFML());
+    	auto screenToGame = gameToScreen.getInverse();
+
+		Vector2i screenMousePos(sf::Mouse::getPosition(window));
+		Vector2f mousePos(screenToGame.transformPoint(screenMousePos.to<float>().toSFML()));
+
     	float dt = deltaClock.restart().asSeconds();
 
 		FrameContext frame {
@@ -67,7 +72,8 @@ int main() {
         	.window = window,
         	.time = time.getElapsedTime().asSeconds(),
         	.assets = assets,
-        	.frame = frame
+        	.frame = frame,
+        	.gameToScreen = gameToScreen
         };
 
         // Check if escape was just pressed

@@ -4,17 +4,9 @@
 #include "../systems.hpp"
 #include "../Store.hpp"
 
-void draw::game(const GameState &state, FrameContext &frame,
-				DrawContext &ctx) {
-	// Screen size in game units
-	auto cameraTransform =
-		sf::Transform()
-			.scale(GameDef::SCALE, GameDef::SCALE)
-			.translate((-frame.cameraPos + GameDef::GAME_CENTER).toSFML());
-
-	// used for game world rendering
+void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 	sf::RenderStates worldRenderState;
-	worldRenderState.transform = cameraTransform;
+	worldRenderState.transform = ctx.gameToScreen;
 
 	// Draw background
 	sf::Sprite sprite;
@@ -72,10 +64,6 @@ void draw::game(const GameState &state, FrameContext &frame,
 			sf::Vertex((bullet.pos).toSFML(), sf::Color::Blue)};
 		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
 	}
-
-	// Fog fog;
-	// fog.notoriety = (state.player.pos - screenCenter).norm() / 2000.0f;
-	// fog.draw(window, font, time.getElapsedTime().asSeconds());
 
 	// Show gun selection
 	const float GUN_ICON_SIZE = 30.0f;
