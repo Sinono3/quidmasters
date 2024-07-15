@@ -21,6 +21,7 @@ void pausedOverlay(DrawContext& ctx);
 void menu(const menu::State& menu, DrawContext& ctx);
 
 // Individual items
+void player(DrawContext& ctx, const Player& player, Assets::Textures::Icon gunIcon);
 void fog(DrawContext& ctx, float notoriety, float t);
 void statusbar(DrawContext &ctx, const char *label, float var, float max,
 			   float x, float y, float maxWidth, float height, sf::Color fill,

@@ -4,7 +4,7 @@
 
 bool lastFrame = false;
 
-void systems::store(GameState &state, const FrameContext& frame) {
+void systems::store(GameState &state, const FrameContext& frame, Assets::Sound& sound) {
 	state.store.hoveredOn.reset();
 
 	// Store only operates during break
@@ -34,7 +34,8 @@ void systems::store(GameState &state, const FrameContext& frame) {
 
 					// Apply the action of this item
 					(*item.action).apply((void*)&state);
-					state.setMessage(Message("It's a deal then!", 2.0f));
+					// state.setMessage(Message("It's a deal then!", 2.0f));
+					sound.cash.play();
 				} else {
 					state.setMessage(Message("you ain't got enough quid bruh!", 2.0f));
 				}

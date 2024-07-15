@@ -11,13 +11,12 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 	// Draw background
 	sf::Sprite sprite;
 	sprite.setTexture(ctx.assets.textures.bgL1);
-	// sprite.setScale(1.5f, 1.5f);
 	ctx.window.draw(sprite);
 
 	// Draw quid drops
 	for (auto &quid : state.quidDrops) {
 		auto radius = quid.getRadius();
-		auto inset = Vector2f(-radius, radius);
+		auto inset = Vector2f(-radius, -radius);
 		sf::CircleShape circle(radius, 4);
 		circle.setFillColor(sf::Color::Yellow);
 		circle.setPosition((quid.pos + inset).toSFML());
@@ -25,11 +24,12 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 	}
 
 	// Draw player
-	auto inset = Vector2f(-Player::RADIUS, -Player::RADIUS);
-	sf::CircleShape playerCircle(Player::RADIUS, 20);
-	playerCircle.setFillColor(sf::Color::White);
-	playerCircle.setPosition((state.player.pos + inset).toSFML());
-	ctx.window.draw(playerCircle, worldRenderState);
+	// auto inset = Vector2f(-Player::RADIUS, -Player::RADIUS);
+	// sf::CircleShape playerCircle(Player::RADIUS, 20);
+	// playerCircle.setFillColor(sf::Color::White);
+	// playerCircle.setPosition((state.player.pos + inset).toSFML());
+	// ctx.window.draw(playerCircle, worldRenderState);
+	draw::player(ctx, state.player, state.guns[state.currentGun].specs.icon);
 
 	// Draw player direction
 	sf::Vertex line[] = {
@@ -120,7 +120,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 				  state.player.maxNourishment, 150.0, 0.0, 100.0, 32.0,
 				  sf::Color::Yellow, sf::Color::Red);
 	draw::statusbar(ctx, "sanity", state.player.sanity,
-				  state.player.maxSanity, 330.0, 0.0, 100.0, 49.0,
+				  state.player.maxSanity, 280.0, 0.0, 100.0, 49.0,
 				  sf::Color(100, 100, 100), sf::Color::Red);
 
 
@@ -158,7 +158,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 		sf::Text text;
 		text.setFont(ctx.assets.papyrus);
 		text.setString(ss.str());
-		text.setPosition(500.0, 0.0);
+		text.setPosition(450.0, 0.0);
 		text.setCharacterSize(40);
 		ctx.window.draw(text);
 	}
@@ -208,7 +208,8 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 	}
 
 	// Fog
+	float sanityFraction = state.player.sanity / state.player.maxSanity;
 	float distFromCenter = (state.player.pos - GameDef::GAME_CENTER).norm();
-	float notoriety = std::max(0.0f, distFromCenter - 30.0f) / 500.0f;
+	float notoriety = (std::max(0.0f, distFromCenter - 30.0f) / 500.0f) + (1.0f - sanityFraction) * 0.3f;
 	draw::fog(ctx, notoriety, ctx.time);
 }

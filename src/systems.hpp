@@ -40,7 +40,7 @@ void death(GameState &state, const FrameContext &frame, Assets::Sound &sound);
 }; // namespace enemy
 
 void message(GameState &state, const FrameContext &frame);
-void store(GameState &state, const FrameContext &frame);
+void store(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 void music(GameState &state, const FrameContext &frame, Assets::Sound& sound);
 
 /// WTFFFFFF HAXX????? !!

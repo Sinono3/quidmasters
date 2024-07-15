@@ -16,6 +16,8 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 	ctx.window.draw(storeTitle);
 
 	for (int i = 0; i < Store::ITEMS.size(); i++) {
+		auto& item = Store::ITEMS[i];
+
 		float x = i * Store::ITEM_TILE_SIZE + Store::SLACK;
 		float y = GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK;
 
@@ -59,9 +61,16 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 			buyText.setString("BUY");
 			buyText.setCharacterSize(15);
 			ctx.window.draw(buyText);
+		} else {
+			sf::Text priceText;
+			priceText.setFont(ctx.assets.papyrus);
+			priceText.setFillColor(sf::Color(255, 255, 0, 200));
+			priceText.setPosition(x, y + 20);
+			priceText.setString(std::to_string(item.price));
+			priceText.setCharacterSize(15);
+			ctx.window.draw(priceText);
 		}
 
-		auto& item = Store::ITEMS[i];
 		// Draw gun sprite
 		sf::Sprite sprite;
 		sprite.setTexture(ctx.assets.textures.icons.get(item.icon));
@@ -75,18 +84,20 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		int index = state.store.hoveredOn.value();
 		const auto &item = Store::ITEMS[index];
 
+		std::stringstream title;
+		title << item.name << " (" << item.price << " quid)";
+		std::stringstream description;
+		description << item.description;
+
+
 		sf::Text text;
 		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 100.0f);
-		text.setString(std::string(item.name));
+		text.setString(title.str());
 		text.setFont(ctx.assets.papyrus);
 		text.setCharacterSize(30.0f);
 		text.setOutlineColor(sf::Color::Black);
 		text.setOutlineThickness(2.0f);
 		ctx.window.draw(text);
-
-		std::stringstream description;
-		description << "Costs " << item.price << " quid. " << item.description;
-
 		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 40.0f);
 		text.setString(description.str());
 		text.setFont(ctx.assets.papyrus);

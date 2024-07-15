@@ -72,9 +72,9 @@ const Gun GUN_GRAVKILLER = {
 	.firePeriod = UniVar(0.2f, 0.3f),
 	.damage = UniVar(1.0f, 1.8f),
 	.knockback = UniVar(0.0f, 0.15f),
-	.bulletSpeed = UniVar(10.0f, 20.0f),
-	.accuracy = UniVar(-3.14f, 3.14f),
-	.bulletsPerFire = 2,
+	.bulletSpeed = UniVar(10.0f, 40.0f),
+	.accuracy = UniVar(-1.14f, 1.14f),
+	.bulletsPerFire = 5,
 };
 const Gun GUN_EXPLD = {
 	.type = Gun::Type::Shotgun,
@@ -97,6 +97,7 @@ std::unique_ptr<Store::PurchaseAction> addGun(Gun gun) {
 		void apply(void* ptr) override {
 			auto& state = *(GameState*)ptr;
 			state.guns.push_back(GunState(gun));
+			state.setMessage(Message("Switch guns with the 0-9 keys!", 6.0f));
 		}
 	};
 	return std::unique_ptr<Store::PurchaseAction>(new AddGun(gun));
@@ -106,6 +107,7 @@ std::unique_ptr<Store::PurchaseAction> heal() {
 		void apply(void *ptr) override {
 			auto& state = *(GameState*)ptr;
 			state.player.health = state.player.maxHealth;
+			state.setMessage(Message("fixed!", 3.0f));
 		}
 	};
 	return std::unique_ptr<Store::PurchaseAction>(new RefillPlayerHealth());
@@ -115,6 +117,7 @@ std::unique_ptr<Store::PurchaseAction> healSanity() {
 		void apply(void *ptr) override {
 			auto& state = *(GameState*)ptr;
 			state.player.sanity = state.player.maxSanity;
+			state.setMessage(Message("Amazing book.", 3.0f));
 		}
 	};
 	return std::unique_ptr<Store::PurchaseAction>(new RefillPlayerSanity());
@@ -130,8 +133,8 @@ const std::array<Store::Item, 7> Store::ITEMS{{
 	Store::Item { "Machine Boy", 800, "Yeahhhh", actions::addGun(GUN_MACHINE_BOY), GUN_MACHINE_BOY.icon },
 	Store::Item { "EXPLD151", 1000, "explode the world", actions::addGun(GUN_EXPLD), GUN_EXPLD.icon },
 	Store::Item { "Gravkiller", 2000, "Chase 'em'", actions::addGun(GUN_GRAVKILLER), GUN_GRAVKILLER.icon },
-	Store::Item { "Medkit", 500, "A single full health refill", actions::heal(), Assets::Textures::Icon::Medkit },
-	Store::Item { "Self-help book", 700, "Remember what makes you you", actions::healSanity(), Assets::Textures::Icon::Book },
+	Store::Item { "First-aid kit", 500, "A single full health refill", actions::heal(), Assets::Textures::Icon::Medkit },
+	Store::Item { "Self-help book", 700, "5 Easy Tricks to Win at Life", actions::healSanity(), Assets::Textures::Icon::Book },
 }};
 
 // All related to enemies

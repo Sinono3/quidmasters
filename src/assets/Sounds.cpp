@@ -19,13 +19,14 @@ Assets::Sound::Sound() {
 	}
 
 	machineGun.setBuffer(machineGunBuffer);
-	machineGun.setVolume(50.0f);
+	machineGun.setVolume(40.0f);
 	shotgun.setBuffer(shotgunBuffer);
-	shotgun.setVolume(30.0f);
+	shotgun.setVolume(20.0f);
 	handgun.setBuffer(handgunBuffer);
 	handgun.setVolume(50.0f);
 	cash.setBuffer(cashBuffer);
 	coins.setBuffer(coinsBuffer);
+	coins.setVolume(50.0f);
 	hit.setBuffer(hitBuffer);
 	hit.setVolume(30.0f);
 

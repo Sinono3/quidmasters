@@ -69,8 +69,3 @@ template<typename U>
 constexpr Vector2<U> Vector2<T>::to() const {
 	return { (U)x, (U)y };
 }
-
-// template struct Vector2<int>;
-// template struct Vector2<unsigned int>;
-// template struct Vector2<float>;
-// template struct Vector2<double>;

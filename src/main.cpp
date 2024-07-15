@@ -115,7 +115,7 @@ int main() {
 				// Message system (make msgs disappear after a while)
 				systems::message(state, frame);
 				// Store stuff (hover on item, buy items)
-				systems::store(state, frame);
+				systems::store(state, frame, assets.sound);
 				// Play music
 				systems::music(state, frame, assets.sound);
 				// uuumm ehhh.... tha HACK SYSTEM

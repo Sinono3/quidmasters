@@ -18,6 +18,7 @@ SRC = src/main.cpp\
 	src/draw/gameOver.cpp\
 	src/draw/menu.cpp\
 	src/draw/pausedOverlay.cpp\
+	src/draw/player.cpp\
 	src/draw/store.cpp\
 	src/draw/statusbar.cpp\
 	src/math/physics.cpp

@@ -2,6 +2,7 @@
 #include "../math/physics.hpp"
 #include "../systems.hpp"
 #include <optional>
+#include <iostream>
 
 void systems::player::movement(GameState &state, const FrameContext &frame) {
 	Vector2f wasd;
@@ -19,8 +20,8 @@ void systems::player::movement(GameState &state, const FrameContext &frame) {
 		wasd = wasd.normalized();
 
 	const float WALK_SPEED = 30.0f;
-	Vector2f velocity = wasd * WALK_SPEED;
-	state.player.pos = state.player.pos + velocity * frame.dt;
+	state.player.vel = wasd * WALK_SPEED;
+	state.player.pos = state.player.pos + state.player.vel * frame.dt;
 
 	// Mouse look
 	Vector2f playerToMouse = frame.mousePos - state.player.pos;

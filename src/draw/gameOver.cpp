@@ -23,7 +23,7 @@ void draw::gameOver(const GameState& state, DrawContext& context) {
 	subText.append("\nPress Enter to restart.");
 
 	sf::Text title, subtitle;
-	title.setString("You fuckin lost!");
+	title.setString("You frickin lost!");
 	title.setPosition(200.0f, 200.0f);
 	title.setFillColor(sf::Color::Red);
 	title.setFont(font);
