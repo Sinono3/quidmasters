@@ -70,8 +70,8 @@ int main() {
 
         DrawContext drawCtx {
         	.window = window,
-        	.time = time.getElapsedTime().asSeconds(),
         	.assets = assets,
+        	.time = time.getElapsedTime().asSeconds(),
         	.frame = frame,
         	.gameToScreen = gameToScreen
         };

@@ -2,7 +2,7 @@
 #include <iostream>
 
 Assets::Textures::Textures() {
-	if (!bgL1.loadFromFile("sprites/Level1.jpeg")
+	if (!bgL1.loadFromFile("sprites/level1.jpeg")
 		|| !fog.loadFromFile("sprites/fog2.png")
 		|| !icons.pistol.loadFromFile("sprites/guns/pistol.png")
 		|| !icons.revolver.loadFromFile("sprites/guns/revolver.png")

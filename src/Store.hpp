@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <optional>
+#include <memory>
 
 struct Store {
 	class PurchaseAction {
