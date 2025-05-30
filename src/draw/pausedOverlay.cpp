@@ -10,12 +10,11 @@ void draw::pausedOverlay(DrawContext &ctx) {
 	ctx.window.draw(rect);
 
 	// Paused text
-	sf::Text text;
-	text.setFont(ctx.assets.papyrus);
+	sf::Text text(ctx.assets.papyrus);
 	text.setString("             PAUSED\n press escape to unpause");
 
 	// Center text on screen
-	sf::Vector2f size = text.getLocalBounds().getSize();
+	sf::Vector2f size = text.getLocalBounds().size;
 	text.setPosition((screenSize / 2.0f) - (size / 2.0f));
 	ctx.window.draw(text);
 }

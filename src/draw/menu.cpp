@@ -16,10 +16,9 @@ void draw::menu(const menu::State& menu, DrawContext &ctx) {
 	ctx.window.draw(rect);
 
 	// Title logo
-	sf::Text text;
-	text.setFont(ctx.assets.papyrus);
+	sf::Text text(ctx.assets.papyrus);
 	text.setString("Quidmasters: Petbuilder");
-	text.setPosition(40, 40);
+	text.setPosition(sf::Vector2f(40, 40));
 	ctx.window.draw(text);
 
 	text.setOutlineColor(sf::Color(255, 0, 0));
@@ -30,7 +29,7 @@ void draw::menu(const menu::State& menu, DrawContext &ctx) {
 		auto& option = menu::OPTIONS[i];
 		auto x = 40;
 		auto y = 170 + i * 40;
-		text.setPosition(x, y);
+		text.setPosition(sf::Vector2f(x, y));
 		text.setString(option.text);
 		text.setFillColor((i == menu.selectedOption) ? SELECTED_COLOR : DESELECTED_COLOR);
 		text.setOutlineThickness((i == menu.selectedOption) ? selectedThickness : 0.0f);

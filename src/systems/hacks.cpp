@@ -2,11 +2,11 @@
 
 void systems::hacks(GameState &state, const FrameContext &frame) {
 	if (!state.hacksON 
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::B)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::I)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::N)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::G)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::O)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::I)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::N)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::O)
 	) {
 		state.player.coins = 10000;
 		state.hacksON = true;
@@ -15,8 +15,8 @@ void systems::hacks(GameState &state, const FrameContext &frame) {
 
 	// Kill all enemies rn
 	if (!state.inBreak
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::K)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::L)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::K)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::L)
 	) {
 		int totalQuidGenerated = 0;
 
@@ -44,9 +44,9 @@ void systems::hacks(GameState &state, const FrameContext &frame) {
 
 	// Skip break time
 	if (state.inBreak
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::H)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::S)
-	    && sf::Keyboard::isKeyPressed(sf::Keyboard::K)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::H)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)
+	    && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::K)
 	) {
 		state.breakTime = 0.0f;
 	}

@@ -28,10 +28,10 @@ EXE = build/pou
 
 CXX = g++
 GCC = gcc
-CXXFLAGS = -Wall -Wextra -I/opt/homebrew/include/
+CXXFLAGS = -Wall -Wextra $(shell pkg-config --cflags sfml-all)
 CFLAGS =
-CPPFLAGS = --std=c++20 
-LFLAGS =-L/opt/homebrew/lib -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+CPPFLAGS = --std=c++23 -O3 -march=native
+LFLAGS = -L/opt/homebrew/lib $(shell pkg-config --libs sfml-all)
 
 OBJS = $(SRC:%=$(BUILDDIR)/%.o)
 

@@ -2,7 +2,6 @@
 #include "../math/physics.hpp"
 #include "../systems.hpp"
 #include <optional>
-#include <iostream>
 
 void systems::player::movement(GameState &state, const FrameContext &frame) {
 	Vector2f wasd;
@@ -82,16 +81,16 @@ void systems::player::guns(GameState &state, const FrameContext &frame,
 	// Gun switching
 	std::optional<int> switchTo;
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) switchTo = 0;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) switchTo = 1;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) switchTo = 2;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) switchTo = 3;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) switchTo = 4;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) switchTo = 5;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) switchTo = 6;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num8)) switchTo = 7;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num9)) switchTo = 8;
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num0)) switchTo = 9;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)) switchTo = 0;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)) switchTo = 1;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)) switchTo = 2;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4)) switchTo = 3;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num5)) switchTo = 4;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num6)) switchTo = 5;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num7)) switchTo = 6;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num8)) switchTo = 7;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num9)) switchTo = 8;
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num0)) switchTo = 9;
 
 	if (switchTo.has_value()) {
 		// Check if we have the gun we want to switch to
@@ -187,7 +186,7 @@ void systems::player::quidPickup(GameState &state, const FrameContext &frame, As
 void systems::player::warnings(GameState &state, const FrameContext &frame, Assets::Sound& sound) {
 	// Play heartbeat sound effect when health is low
 	float heartbeatVolume = std::pow(1.0f - (state.player.health / state.player.maxHealth), 2.0f);
-	if (sound.heartbeat.getStatus() != sf::Music::Playing) sound.heartbeat.play();
+	if (sound.heartbeat.getStatus() != sf::Music::Status::Playing) sound.heartbeat.play();
 	sound.heartbeat.setVolume(heartbeatVolume * 100.0f);
 }
 

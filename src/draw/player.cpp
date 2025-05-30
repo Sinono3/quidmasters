@@ -60,7 +60,7 @@ void draw::player(DrawContext &ctx, const Player &player, Assets::Textures::Icon
 
 	// Head
 	sf::CircleShape head(Player::RADIUS, 20);
-	head.setPosition(-Player::RADIUS, -Player::RADIUS);
+	head.setPosition(sf::Vector2f(-Player::RADIUS, -Player::RADIUS));
 	ctx.window.draw(head, states);
 
 	// Draw gun

@@ -17,10 +17,9 @@ void draw::statusbar(DrawContext& ctx,
 	shape.setFillColor(fill);
 	ctx.window.draw(shape);
 
-	sf::Text text;
-	text.setFont(ctx.assets.papyrus);
+	sf::Text text(ctx.assets.papyrus);
 	text.setString(label);
-	text.setPosition(x, y);
+	text.setPosition(sf::Vector2f(x, y));
 	text.setCharacterSize(20);
 	text.setFillColor(sf::Color::Black);
 

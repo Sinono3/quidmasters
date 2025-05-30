@@ -8,10 +8,9 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		return;
 	}
 
-	sf::Text storeTitle;
-	storeTitle.setFont(ctx.assets.papyrus);
+	sf::Text storeTitle(ctx.assets.papyrus);
 	storeTitle.setFillColor(sf::Color(200, 200, 200, 100));
-	storeTitle.setPosition(Store::SLACK, GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK - 40.0f);
+	storeTitle.setPosition(sf::Vector2f(Store::SLACK, GameDef::SCREEN_HEIGHT - Store::ITEM_TILE_SIZE - Store::SLACK - 40.0f));
 	storeTitle.setString("store");
 	ctx.window.draw(storeTitle);
 
@@ -24,7 +23,7 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		// Draw store item
     	sf::RectangleShape shape;
     	shape.setSize(sf::Vector2f(Store::ITEM_TILE_SIZE, Store::ITEM_TILE_SIZE));
-    	shape.setPosition(x, y);
+    	shape.setPosition(sf::Vector2f(x, y));
     	shape.setFillColor(sf::Color(40, 10, 10));
     	shape.setOutlineColor(sf::Color(100, 40, 40));
     	shape.setOutlineThickness(2.0f);
@@ -32,49 +31,45 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 
 		if (state.store.bought[i]) {
 			sf::RectangleShape shape(sf::Vector2f(Store::ITEM_TILE_SIZE, Store::ITEM_TILE_SIZE));
-			shape.setPosition(x, y);
+			shape.setPosition(sf::Vector2f(x, y));
 			shape.setFillColor(sf::Color(255, 255, 0, 80));
 			shape.setOutlineColor(sf::Color(255, 255, 0, 120));
 			shape.setOutlineThickness(2.0f);
 			ctx.window.draw(shape);
 
-			sf::Text buyText;
-			buyText.setFont(ctx.assets.papyrus);
+			sf::Text buyText(ctx.assets.papyrus);
 			buyText.setFillColor(sf::Color(255, 255, 0, 200));
-			buyText.setPosition(x, y);
+			buyText.setPosition(sf::Vector2f(x, y));
 			buyText.setString("SOLD\nOUT");
 			buyText.setCharacterSize(10);
 			ctx.window.draw(buyText);
 		} else if (state.store.hoveredOn.has_value() && state.store.hoveredOn.value() == i) {
 			sf::RectangleShape shape(
 				sf::Vector2f(Store::ITEM_TILE_SIZE, Store::ITEM_TILE_SIZE));
-			shape.setPosition(x, y);
+			shape.setPosition(sf::Vector2f(x, y));
 			shape.setFillColor(sf::Color(0, 255, 0, 80));
 			shape.setOutlineColor(sf::Color(0, 255, 0, 120));
 			shape.setOutlineThickness(2.0f);
 			ctx.window.draw(shape);
 
-			sf::Text buyText;
-			buyText.setFont(ctx.assets.papyrus);
+			sf::Text buyText(ctx.assets.papyrus);
 			buyText.setFillColor(sf::Color(255, 255, 0, 200));
-			buyText.setPosition(x, y);
+			buyText.setPosition(sf::Vector2f(x, y));
 			buyText.setString("BUY");
 			buyText.setCharacterSize(15);
 			ctx.window.draw(buyText);
 		} else {
-			sf::Text priceText;
-			priceText.setFont(ctx.assets.papyrus);
+			sf::Text priceText(ctx.assets.papyrus);
 			priceText.setFillColor(sf::Color(255, 255, 0, 200));
-			priceText.setPosition(x, y + 20);
+			priceText.setPosition(sf::Vector2f(x, y + 20));
 			priceText.setString(std::to_string(item.price));
 			priceText.setCharacterSize(15);
 			ctx.window.draw(priceText);
 		}
 
 		// Draw gun sprite
-		sf::Sprite sprite;
-		sprite.setTexture(ctx.assets.textures.icons.get(item.icon));
-		sprite.setPosition(x, y);
+		sf::Sprite sprite(ctx.assets.textures.icons.get(item.icon));
+		sprite.setPosition(sf::Vector2f(x, y));
 		ctx.window.draw(sprite);
 	}
 
@@ -90,17 +85,15 @@ void draw::store(const GameState &state, DrawContext &ctx) {
 		description << item.description;
 
 
-		sf::Text text;
-		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 100.0f);
+		sf::Text text(ctx.assets.papyrus);
+		text.setPosition(sf::Vector2f(textX, GameDef::SCREEN_HEIGHT - 100.0f));
 		text.setString(title.str());
-		text.setFont(ctx.assets.papyrus);
 		text.setCharacterSize(30.0f);
 		text.setOutlineColor(sf::Color::Black);
 		text.setOutlineThickness(2.0f);
 		ctx.window.draw(text);
-		text.setPosition(textX, GameDef::SCREEN_HEIGHT - 40.0f);
+		text.setPosition(sf::Vector2f(textX, GameDef::SCREEN_HEIGHT - 40.0f));
 		text.setString(description.str());
-		text.setFont(ctx.assets.papyrus);
 		text.setCharacterSize(20.0f);
 		ctx.window.draw(text);
 	}

@@ -2,15 +2,13 @@
 #include "../GameDef.hpp"
 #include "../draw.hpp"
 #include "../systems.hpp"
-#include "../Store.hpp"
 
 void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 	sf::RenderStates worldRenderState;
 	worldRenderState.transform = ctx.gameToScreen;
 
 	// Draw background
-	sf::Sprite sprite;
-	sprite.setTexture(ctx.assets.textures.bgL1);
+	sf::Sprite sprite(ctx.assets.textures.bgL1);
 	ctx.window.draw(sprite);
 
 	// Draw quid drops
@@ -36,7 +34,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 		sf::Vertex(state.player.pos.toSFML(), sf::Color::Green),
 		sf::Vertex((state.player.pos + state.player.getForward()).toSFML(),
 				   sf::Color::Red)};
-	ctx.window.draw(line, 2, sf::Lines, worldRenderState);
+	ctx.window.draw(line, 2, sf::PrimitiveType::Lines, worldRenderState);
 
 	// Draw enemies
 	for (auto &enemy : state.enemies) {
@@ -53,7 +51,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 			sf::Vertex((bullet.pos - bullet.vel * 0.01f).toSFML(),
 					   sf::Color::Green),
 			sf::Vertex((bullet.pos).toSFML(), sf::Color::Red)};
-		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
+		ctx.window.draw(line, 2, sf::PrimitiveType::Lines, worldRenderState);
 	}
 
 	// Draw homing bullets
@@ -62,7 +60,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 			sf::Vertex((bullet.pos - bullet.vel * 0.01f).toSFML(),
 					   sf::Color::Cyan),
 			sf::Vertex((bullet.pos).toSFML(), sf::Color::Blue)};
-		ctx.window.draw(line, 2, sf::Lines, worldRenderState);
+		ctx.window.draw(line, 2, sf::PrimitiveType::Lines, worldRenderState);
 	}
 
 	// Show gun selection
@@ -74,7 +72,7 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 
 		sf::RectangleShape shape;
 		shape.setSize(sf::Vector2f(GUN_ICON_SIZE, GUN_ICON_SIZE));
-		shape.setPosition(x, y);
+		shape.setPosition(sf::Vector2f(x, y));
 
 		auto fillColor = sf::Color(40, 10, 10);
 		auto outlineColor = sf::Color(100, 40, 40);
@@ -90,17 +88,15 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 		ctx.window.draw(shape);
 
 		// Draw gun sprite
-		sf::Sprite sprite;
-		sprite.setTexture(ctx.assets.textures.icons.get(gun.specs.icon));
-		sprite.setPosition(x, y);
+		sf::Sprite sprite(ctx.assets.textures.icons.get(gun.specs.icon));
+		sprite.setPosition(sf::Vector2f(x, y));
 		ctx.window.draw(sprite);
 
 		// Draw gun number
-		sf::Text text;
-		text.setFont(ctx.assets.papyrus);
+		sf::Text text(ctx.assets.papyrus);
 		text.setString(std::to_string(i + 1));
 		text.setCharacterSize(20.0f);
-		text.setPosition(x, y);
+		text.setPosition(sf::Vector2f(x, y));
 
 		// Reloading
 		draw::statusbar(ctx, "time", gun.cooldownTimer, gun.cooldown, 
@@ -155,10 +151,9 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 		std::stringstream ss;
 		ss << "Quid: ";
 		ss << state.player.coins;
-		sf::Text text;
-		text.setFont(ctx.assets.papyrus);
+		sf::Text text(ctx.assets.papyrus);
 		text.setString(ss.str());
-		text.setPosition(450.0, 0.0);
+		text.setPosition(sf::Vector2f(450.0, 0.0));
 		text.setCharacterSize(40);
 		ctx.window.draw(text);
 	}
@@ -192,18 +187,17 @@ void draw::game(const GameState &state, FrameContext &frame, DrawContext &ctx) {
 
 	// Show current pet message
 	if (state.message.has_value()) {
-		sf::Text text;
-		text.setFont(ctx.assets.papyrus);
+		sf::Text text(ctx.assets.papyrus);
 		text.setString((*state.message).text);
 		text.setFillColor(sf::Color::Cyan);
 
-		float width = text.getLocalBounds().getSize().x;
+		float width = text.getLocalBounds().size.x;
 
 		sf::RenderStates st;
 		sf::Transform t;
 		float fact = 0.01f * std::sin(ctx.time * 20.0f);
-		st.transform = t.translate(GameDef::SCREEN_WIDTH - width - 150.0f, 60.0f)
-						   .scale(1.0f + fact, 1.0f + fact);
+		st.transform = t.translate(sf::Vector2f(GameDef::SCREEN_WIDTH - width - 150.0f, 60.0f))
+						   .scale(sf::Vector2f(1.0f + fact, 1.0f + fact));
 		ctx.window.draw(text, st);
 	}
 

@@ -22,15 +22,13 @@ void draw::gameOver(const GameState& state, DrawContext& context) {
 	}
 	subText.append("\nPress Enter to restart.");
 
-	sf::Text title, subtitle;
+	sf::Text title(font), subtitle(font);
 	title.setString("You frickin lost!");
-	title.setPosition(200.0f, 200.0f);
+	title.setPosition(sf::Vector2f(200.0f, 200.0f));
 	title.setFillColor(sf::Color::Red);
-	title.setFont(font);
-	subtitle.setPosition(200.0f, 300.0f);
+	subtitle.setPosition(sf::Vector2f(200.0f, 300.0f));
 	subtitle.setString(subText);
 	subtitle.setFillColor(sf::Color::White);
-	subtitle.setFont(font);
 
 	window.clear(sf::Color(12, 2, 2));
 	window.draw(title);

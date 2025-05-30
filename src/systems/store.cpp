@@ -22,7 +22,7 @@ void systems::store(GameState &state, const FrameContext& frame, Assets::Sound& 
 		}
 	}
 
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && !lastFrame) {
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && !lastFrame) {
 		if (state.store.hoveredOn.has_value()) {
 			int index = state.store.hoveredOn.value();
 			auto &item = Store::ITEMS[index];
@@ -44,5 +44,5 @@ void systems::store(GameState &state, const FrameContext& frame, Assets::Sound& 
 			}
 		}
 	}
-	lastFrame = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+	lastFrame = sf::Mouse::isButtonPressed(sf::Mouse::Button::Left);
 }

@@ -17,7 +17,7 @@ void systems::music(GameState &state, const FrameContext &frame, Assets::Sound &
 		auto& song = *songs[i];
 
 		// Songs should always be playing during the game
-		if (song.getStatus() !=  sf::Music::Playing) song.play();
+		if (song.getStatus() !=  sf::Music::Status::Playing) song.play();
 
 		float target = (i == currentSong) ? 70.0f : 0.0f;
 		float volume = song.getVolume();

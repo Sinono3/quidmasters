@@ -18,7 +18,7 @@
 std::default_random_engine rng = std::default_random_engine();
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(GameDef::SCREEN_WIDTH, GameDef::SCREEN_HEIGHT), "A lonely dungeon");
+    sf::RenderWindow window(sf::VideoMode(sf::Vector2u(GameDef::SCREEN_WIDTH, GameDef::SCREEN_HEIGHT)), "A lonely dungeon");
     window.setVerticalSyncEnabled(true);
 	sf::Clock time;
 	sf::Clock deltaClock;
@@ -32,9 +32,9 @@ int main() {
 	bool escapedPressedLastFrame = false;
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+        std::optional<sf::Event> event;
+        while ((event = window.pollEvent()).has_value()) {
+            if ((*event).is<sf::Event::Closed>())
                 window.close();
         }
 
@@ -44,10 +44,10 @@ int main() {
     	auto gameToScreen =
     		sf::Transform()
     			// Set an unit to be in game scale
-    			.scale(GameDef::SCALE, GameDef::SCALE)
+    			.scale(sf::Vector2f(GameDef::SCALE, GameDef::SCALE))
     			// Make the positive y-coordinate point upward, not downward.
     			// (this is to make all math more standard)
-    			.scale(1.0f, -1.0f)
+    			.scale(sf::Vector2f(1.0f, -1.0f))
     			// Center the screen on the camera position
     			.translate((-cameraPos).toSFML());
     			// .translate((-frame.cameraPos + GameDef::GAME_CENTER).toSFML());
@@ -77,7 +77,7 @@ int main() {
         };
 
         // Check if escape was just pressed
-        bool escapedPressed =  sf::Keyboard::isKeyPressed(sf::Keyboard::Escape);
+        bool escapedPressed =  sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape);
         bool escapedJustPressed = escapedPressed && !escapedPressedLastFrame;
 		escapedPressedLastFrame = escapedPressed;
 
@@ -145,13 +145,13 @@ int main() {
 
 
         	    // Check if user clicked on
-        	    if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && menu.selectedOption != -1) {
+        	    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && menu.selectedOption != -1) {
         	        (menu::OPTIONS[menu.selectedOption].action)(state, menu);
         	    }
         	    break;
     		case GameStage::Lost:
 	        	// Restart with enter
-	        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+	        	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter)) {
 	        	    state = GameState();
 	        	    state.stage = GameStage::Playing;
 	        	}

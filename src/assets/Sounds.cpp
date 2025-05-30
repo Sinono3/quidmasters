@@ -1,42 +1,38 @@
-#include <iostream>
 #include "../Assets.hpp"
 
-Assets::Sound::Sound() {
-	if (!machineGunBuffer.loadFromFile("sfx/mg.wav")
-		|| !handgunBuffer.loadFromFile("sfx/handgun.wav")
-		|| !shotgunBuffer.loadFromFile("sfx/shotgun.wav")
-		|| !cashBuffer.loadFromFile("sfx/cash.wav") 
-		|| !coinsBuffer.loadFromFile("sfx/coins.wav") 
-		|| !hitBuffer.loadFromFile("sfx/hit.wav")
-		|| !menuSelectBuffer.loadFromFile("sfx/menu_select.wav")
-		|| !heartbeat.openFromFile("sfx/heartbeat.mp3")
-		|| !music_Phase1.openFromFile("music/clapmusic.mp3")
-		|| !music_Phase2.openFromFile("music/1234_lasmanos.mp3")
-		|| !music_Phase3.openFromFile("music/desert3.mp3")
-	) {
-		std::cerr << "Error while loading sound assets" << std::endl;
-		exit(1);
-	}
+Assets::Sound::Sound() :
+	machineGunBuffer("sfx/mg.wav"),
+	handgunBuffer("sfx/handgun.wav"),
+	shotgunBuffer("sfx/shotgun.wav"),
+	cashBuffer("sfx/cash.wav"),
+	hitBuffer("sfx/hit.wav"),
+	coinsBuffer("sfx/coins.wav"),
+	menuSelectBuffer("sfx/menu_select.wav"),
+	
+	machineGun(machineGunBuffer),
+	handgun(handgunBuffer),
+	shotgun(shotgunBuffer),
+	cash(cashBuffer),
+	hit(hitBuffer),
+	coins(coinsBuffer),
+	menuSelect(menuSelectBuffer),
 
-	machineGun.setBuffer(machineGunBuffer);
+	heartbeat("sfx/heartbeat.mp3"),
+	music_Phase1("music/clapmusic.mp3"),
+	music_Phase2("music/1234_lasmanos.mp3"),
+	music_Phase3("music/desert3.mp3")
+{
 	machineGun.setVolume(40.0f);
-	shotgun.setBuffer(shotgunBuffer);
 	shotgun.setVolume(20.0f);
-	handgun.setBuffer(handgunBuffer);
 	handgun.setVolume(50.0f);
-	cash.setBuffer(cashBuffer);
-	coins.setBuffer(coinsBuffer);
 	coins.setVolume(50.0f);
-	hit.setBuffer(hitBuffer);
 	hit.setVolume(30.0f);
 
-	menuSelect.setBuffer(menuSelectBuffer);
-
-	heartbeat.setLoop(true);
-	music_Phase1.setLoop(true);
+	heartbeat.setLooping(true);
+	music_Phase1.setLooping(true);
 	music_Phase1.setVolume(0.0f);
-	music_Phase2.setLoop(true);
+	music_Phase2.setLooping(true);
 	music_Phase2.setVolume(0.0f);
-	music_Phase3.setLoop(true);
+	music_Phase3.setLooping(true);
 	music_Phase3.setVolume(0.0f);
 }

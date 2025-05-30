@@ -8,7 +8,7 @@ void draw::face(DrawContext &ctx, Vector2f position, float headRadius, float fro
 	// head
 	float HEAD_R = headRadius;
 	sf::CircleShape head(HEAD_R, 30);
-	head.setPosition(initialX - HEAD_R, initialY - HEAD_R - 30.0f);
+	head.setPosition(sf::Vector2f(initialX - HEAD_R, initialY - HEAD_R - 30.0f));
 	head.setFillColor(sf::Color::Black);
 	head.setOutlineColor(sf::Color::White);
 	head.setOutlineThickness(1.0f);
@@ -17,10 +17,10 @@ void draw::face(DrawContext &ctx, Vector2f position, float headRadius, float fro
 	// eyes
 	float R = eyeRadius;
 	sf::CircleShape eye(R, 10.0f);
-	eye.setPosition(initialX - 20.0 - R, initialY - 50.0 - R);
+	eye.setPosition(sf::Vector2f(initialX - 20.0 - R, initialY - 50.0 - R));
 	eye.setFillColor(sf::Color::White);
 	ctx.window.draw(eye);
-	eye.setPosition(initialX + 20.0 - R, initialY - 50.0 - R);
+	eye.setPosition(sf::Vector2f(initialX + 20.0 - R, initialY - 50.0 - R));
 	ctx.window.draw(eye);
 
 	// smile
@@ -37,5 +37,5 @@ void draw::face(DrawContext &ctx, Vector2f position, float headRadius, float fro
 		points[i] = sf::Vertex(sf::Vector2f(initialX + (xCentered * width), initialY + y));
 	}
 
-	ctx.window.draw(points, POINT_COUNT, sf::LineStrip);
+	ctx.window.draw(points, POINT_COUNT, sf::PrimitiveType::LineStrip);
 }
