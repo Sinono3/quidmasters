@@ -4,8 +4,8 @@ This repository contains the source code for the game *Quidmasters: Petbuilder*.
 
 ## Dependencies
 
-- SFML >= 2.6.1
-- C++20
+- SFML >= 3.0.0
+- C++23
 
 ## Explanation
 
